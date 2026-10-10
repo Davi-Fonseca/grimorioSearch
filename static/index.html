@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grimório – busca de magias de D&amp;D 5e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Libre+Caslon+Text:ital,wght@1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="rough" x="-2%" y="-2%" width="104%" height="104%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+  <filter id="ink" x="-4%" y="-10%" width="108%" height="125%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<div class="frame" aria-hidden="true"></div>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="wordmark">
+        <h1>GRIMÓRIO</h1>
+        <svg class="mark" viewBox="0 0 66 21" aria-hidden="true">
+          <path d="M3 11H46" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <path d="M55 1l2.6 7.4L65 11l-7.4 2.6L55 21l-2.6-7.4L45 11l7.4-2.6z" fill="currentColor"/>
+        </svg>
+      </div>
+      <span class="tagline">Magias de D&amp;D 5ª edição</span>
+    </div>
+    <div class="search">
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Nome ou efeito (ex.: fogo, cura)"
+             aria-label="Buscar magias">
+      <kbd aria-hidden="true">/</kbd>
+    </div>
+    <button class="toggle-filters" id="toggle-filters" aria-expanded="false" aria-controls="filters">Filtros</button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="filters" id="filters" aria-label="Filtros">
+    <fieldset>
+      <legend>Círculo <span class="hint">(T = truque)</span></legend>
+      <div class="circles" id="levels"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Classe <span class="hint">(qualquer uma das marcadas)</span></legend>
+      <div id="classes"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Escola de magia</legend>
+      <div id="schools"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Características</legend>
+      <div class="switch-row">
+        <label class="opt" id="opt-conc"><input type="checkbox" id="f-conc"><span class="name">Exige concentração</span></label>
+        <label class="opt" id="opt-ritual"><input type="checkbox" id="f-ritual"><span class="name">Pode ser conjurada como ritual</span></label>
+      </div>
+    </fieldset>
+
+    <button class="link-btn" id="clear-side" type="button">Limpar filtros</button>
+  </aside>
+
+  <section aria-label="Resultados">
+    <div class="toolbar">
+      <div class="total" id="total" aria-live="polite"></div>
+      <label class="sort">Ordenar por
+        <select id="sort">
+          <option value="relevance">Relevância</option>
+          <option value="name">Nome (A–Z)</option>
+          <option value="level">Círculo</option>
+        </select>
+      </label>
+    </div>
+    <div class="chips" id="chips" aria-label="Filtros ativos"></div>
+    <div id="results" class="grid" aria-live="off"><p>Carregando magias…</p></div>
+    <div id="more" class="more-wrap"></div>
+  </section>
+</main>
+
+<footer>
+  <p>Magias do SRD 5.2 (edição 2024 de D&amp;D). Os textos das magias estão em inglês, e os filtros, rótulos, alcances e durações foram traduzidos e convertidos para o sistema métrico.</p>
+  <p>This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+</footer>
+
+<script>
+/* ================================================================
+   Interface do Grimório. A busca e os filtros rodam no Elasticsearch,
+   via GET /api/search (ver app.py). Aqui ficam só o estado e o desenho.
+   ================================================================ */
+const PAGE = 48;
+
+const SCHOOLS = {
+  Abjuration:    { pt: "Abjuração",    color: "#5b8def" },
+  Conjuration:   { pt: "Conjuração",   color: "#f29a3a" },
+  Divination:    { pt: "Adivinhação",  color: "#2fc2b0" },
+  Enchantment:   { pt: "Encantamento", color: "#e86ab5" },
+  Evocation:     { pt: "Evocação",     color: "#ff5a3c" },
+  Illusion:      { pt: "Ilusão",       color: "#9b7bff" },
+  Necromancy:    { pt: "Necromancia",  color: "#7ccb5a" },
+  Transmutation: { pt: "Transmutação", color: "#c99a6b" }
+};
+const CLASSES = {
+  Bard: "Bardo", Cleric: "Clérigo", Druid: "Druida", Paladin: "Paladino",
+  Ranger: "Guardião", Sorcerer: "Feiticeiro", Warlock: "Bruxo", Wizard: "Mago"
+};
+const byPt = (map) => Object.keys(map).sort((a, b) => {
+  const x = map[a].pt || map[a], y = map[b].pt || map[b];
+  return x.localeCompare(y, "pt-BR");
+});
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const levelLabel = (l) => (l === 0 ? "Truque" : `${l}º círculo`);
+
+/* ---------- estado ---------- */
+const state = {
+  q: "", levels: new Set(), schools: new Set(), classes: new Set(),
+  concentration: false, ritual: false, sort: "relevance"
+};
+let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {} } };
+let status = "loading";            // loading | ok | error
+let controller = null;
+let timer = null;
+
+const activeCount = () =>
+  state.levels.size + state.schools.size + state.classes.size + (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0);
+const toggle = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
+const clearFilters = () => {
+  state.levels.clear(); state.schools.clear(); state.classes.clear();
+  state.concentration = false; state.ritual = false;
+};
+
+/* ---------- chamada à API ---------- */
+function queryString(offset) {
+  const p = new URLSearchParams();
+  if (state.q.trim()) p.set("q", state.q.trim());
+  state.levels.forEach((v) => p.append("level", v));
+  state.schools.forEach((v) => p.append("school", v));
+  state.classes.forEach((v) => p.append("class", v));
+  if (state.concentration) p.set("concentration", "true");
+  if (state.ritual) p.set("ritual", "true");
+  p.set("sort", state.sort);
+  p.set("limit", PAGE);
+  p.set("offset", offset);
+  return p.toString();
+}
+
+async function runSearch(append = false) {
+  if (controller) controller.abort();           // descarta a busca anterior
+  controller = new AbortController();
+  const offset = append ? data.hits.length : 0;
+  el.results.classList.add("results-busy");
+  try {
+    const res = await fetch(`/api/search?${queryString(offset)}`, { signal: controller.signal });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const json = await res.json();
+    data = {
+      hits: append ? data.hits.concat(json.hits) : json.hits,
+      total: json.total, totalAll: json.total_all, facets: json.facets
+    };
+    status = "ok";
+  } catch (err) {
+    if (err.name === "AbortError") return;
+    status = "error";
+  }
+  el.results.classList.remove("results-busy");
+  renderResults();
+}
+
+// Atualiza os controles na hora e dispara a busca (com atraso ao digitar).
+function changed(delay = 0) {
+  renderControls();
+  clearTimeout(timer);
+  timer = setTimeout(() => runSearch(false), delay);
+}
+
+/* ---------- desenho ---------- */
+const $ = (sel) => document.querySelector(sel);
+const el = {
+  q: $("#q"), levels: $("#levels"), schools: $("#schools"), classes: $("#classes"),
+  conc: $("#f-conc"), ritual: $("#f-ritual"), total: $("#total"), sort: $("#sort"),
+  chips: $("#chips"), results: $("#results"), more: $("#more"),
+  filters: $("#filters"), toggle: $("#toggle-filters")
+};
+
+function buildFacets() {
+  el.levels.innerHTML = Array.from({ length: 10 }, (_, l) =>
+    `<button type="button" class="circ" data-level="${l}" aria-pressed="false" aria-label="${levelLabel(l)}">${l === 0 ? "T" : l}</button>`
+  ).join("");
+  el.schools.innerHTML = byPt(SCHOOLS).map((k) =>
+    `<label class="opt" data-school="${k}"><input type="checkbox" value="${k}">
+       <span class="dot" style="background:${SCHOOLS[k].color}"></span>
+       <span class="name">${SCHOOLS[k].pt}</span><span class="count"></span></label>`
+  ).join("");
+  el.classes.innerHTML = byPt(CLASSES).map((k) =>
+    `<label class="opt" data-class="${k}"><input type="checkbox" value="${k}">
+       <span class="name">${CLASSES[k]}</span><span class="count"></span></label>`
+  ).join("");
+}
+
+function chipHtml(kind, value, label) {
+  return `<button type="button" class="chip" data-kind="${kind}" data-value="${esc(value)}" aria-label="Remover filtro: ${esc(label)}">${esc(label)} <span aria-hidden="true">×</span></button>`;
+}
+
+// Parte que depende só do estado local (seleções)
+function renderControls() {
+  el.levels.querySelectorAll(".circ").forEach((b) =>
+    b.setAttribute("aria-pressed", state.levels.has(Number(b.dataset.level))));
+  el.schools.querySelectorAll(".opt").forEach((o) => {
+    const on = state.schools.has(o.dataset.school);
+    o.querySelector("input").checked = on; o.classList.toggle("on", on);
+  });
+  el.classes.querySelectorAll(".opt").forEach((o) => {
+    const on = state.classes.has(o.dataset.class);
+    o.querySelector("input").checked = on; o.classList.toggle("on", on);
+  });
+  el.conc.checked = state.concentration;
+  el.ritual.checked = state.ritual;
+
+  const chips = [];
+  [...state.levels].sort((a, b) => a - b).forEach((l) => chips.push(chipHtml("levels", l, levelLabel(l))));
+  [...state.schools].forEach((k) => chips.push(chipHtml("schools", k, SCHOOLS[k].pt)));
+  [...state.classes].forEach((k) => chips.push(chipHtml("classes", k, CLASSES[k])));
+  if (state.concentration) chips.push(chipHtml("concentration", "", "Concentração"));
+  if (state.ritual) chips.push(chipHtml("ritual", "", "Ritual"));
+  el.chips.innerHTML = chips.join("");
+
+  const act = activeCount();
+  el.toggle.textContent = act ? `Filtros (${act})` : "Filtros";
+}
+
+// Contagens vêm do Elasticsearch (agregações)
+function renderFacetCounts() {
+  const f = data.facets;
+  el.levels.querySelectorAll(".circ").forEach((b) => {
+    const n = f.levels[b.dataset.level] || 0;
+    b.classList.toggle("empty", !n);
+    b.title = `${levelLabel(Number(b.dataset.level))}: ${n}`;
+  });
+  el.schools.querySelectorAll(".opt").forEach((o) => {
+    const n = f.schools[o.dataset.school] || 0;
+    o.classList.toggle("empty", !n);
+    o.querySelector(".count").textContent = n;
+  });
+  el.classes.querySelectorAll(".opt").forEach((o) => {
+    const n = f.classes[o.dataset.class] || 0;
+    o.classList.toggle("empty", !n);
+    o.querySelector(".count").textContent = n;
+  });
+}
+
+function cardHtml(s) {
+  const tags = [s.concentration ? "Concentração" : "", s.ritual ? "Ritual" : ""]
+    .filter(Boolean).map((t) => `<span class="tag">${t}</span>`).join("");
+  const classes = s.classes.map((c) =>
+    `<button type="button" class="cls${state.classes.has(c) ? " on" : ""}" data-class="${c}" aria-pressed="${state.classes.has(c)}" aria-label="Filtrar pela classe ${CLASSES[c] || c}">${CLASSES[c] || esc(c)}</button>`
+  ).join("");
+  const school = SCHOOLS[s.school] || { pt: s.school, color: "var(--muted)" };
+  const comps = (s.components || []).join(", ") + (s.material ? ` (${s.material})` : "");
+  return `<article class="card" style="--school:${school.color}">
+    <div class="card-top"><span class="lvl">${levelLabel(s.level)}</span><span class="tags">${tags}</span></div>
+    <h2>${esc(s.name)}</h2>
+    <div class="school-row">
+      <span class="school-line"><span class="dot" style="background:${school.color}"></span>${school.pt}</span>
+      <span class="classes">${classes}</span>
+    </div>
+    <dl class="meta">
+      <dt>Tempo</dt><dd>${esc(s.time_pt)}</dd>
+      <dt>Alcance</dt><dd>${esc(s.range_pt)}</dd>
+      <dt>Duração</dt><dd>${esc(s.duration_pt)}</dd>
+    </dl>
+    <p class="summary">${esc(s.summary)}</p>
+    <details class="more">
+      <summary>Descrição completa (em inglês)</summary>
+      <p class="full">${esc(s.description)}</p>
+      ${s.higher_level ? `<p class="full"><strong>Em círculos superiores.</strong> ${esc(s.higher_level)}</p>` : ""}
+      ${comps ? `<p class="comp">Componentes: ${esc(comps)}</p>` : ""}
+    </details>
+  </article>`;
+}
+
+function renderResults() {
+  renderControls();
+
+  if (status === "error") {
+    el.total.textContent = "";
+    el.more.innerHTML = "";
+    el.results.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <strong>Não foi possível buscar as magias</strong>
+      Confirme que o Elasticsearch está no ar (<code>docker compose up -d</code>), que as magias foram
+      indexadas (<code>python ingest.py --reset</code>) e que o servidor está rodando
+      (<code>uvicorn app:app</code>).<br><br>
+      <button type="button" class="link-btn" id="retry">Tentar de novo</button></div>`;
+    return;
+  }
+
+  renderFacetCounts();
+  const n = data.total;
+  el.total.innerHTML = `${n} ${n === 1 ? "magia" : "magias"} <small>de ${data.totalAll}</small>`;
+
+  el.results.innerHTML = data.hits.length
+    ? data.hits.map(cardHtml).join("")
+    : `<div class="empty-state" style="grid-column:1/-1">
+         <strong>Nenhuma magia encontrada</strong>
+         Tente remover algum filtro ou buscar por outra palavra.<br><br>
+         <button type="button" class="link-btn" id="clear-empty">Limpar busca e filtros</button>
+       </div>`;
+
+  el.more.innerHTML = data.hits.length < data.total
+    ? `<button type="button" class="more-btn" id="load-more">Mostrar mais (${data.total - data.hits.length})</button>`
+    : "";
+}
+
+/* ---------- eventos ---------- */
+function resetAll() { clearFilters(); state.q = ""; el.q.value = ""; changed(); }
+
+el.q.addEventListener("input", () => { state.q = el.q.value; changed(180); });
+el.q.addEventListener("keydown", (e) => { if (e.key === "Escape") { el.q.value = ""; state.q = ""; changed(); } });
+el.sort.addEventListener("change", () => { state.sort = el.sort.value; changed(); });
+
+el.levels.addEventListener("click", (e) => {
+  const b = e.target.closest(".circ"); if (!b) return;
+  toggle(state.levels, Number(b.dataset.level)); changed();
+});
+el.schools.addEventListener("change", (e) => { toggle(state.schools, e.target.value); changed(); });
+el.classes.addEventListener("change", (e) => { toggle(state.classes, e.target.value); changed(); });
+el.conc.addEventListener("change", () => { state.concentration = el.conc.checked; changed(); });
+el.ritual.addEventListener("change", () => { state.ritual = el.ritual.checked; changed(); });
+$("#clear-side").addEventListener("click", () => { clearFilters(); changed(); });
+
+el.chips.addEventListener("click", (e) => {
+  const c = e.target.closest(".chip"); if (!c) return;
+  const { kind, value } = c.dataset;
+  if (kind === "levels") state.levels.delete(Number(value));
+  else if (kind === "schools") state.schools.delete(value);
+  else if (kind === "classes") state.classes.delete(value);
+  else if (kind === "concentration") state.concentration = false;
+  else if (kind === "ritual") state.ritual = false;
+  changed();
+});
+
+el.results.addEventListener("click", (e) => {
+  if (e.target.closest("#clear-empty")) return resetAll();
+  if (e.target.closest("#retry")) return changed();
+  const b = e.target.closest(".cls"); if (!b) return;
+  toggle(state.classes, b.dataset.class); changed();
+});
+/* Abrir a descrição de um card empurra as linhas de baixo, mas os vizinhos da mesma linha
+   mantêm a altura que tinham (sem isso, o grid esticaria todos ao tamanho do card aberto). */
+const frozenGroups = new Map();   // card -> conjunto de cards da mesma linha
+
+function releaseRow(group) {
+  group.forEach((c) => { c.style.height = ""; frozenGroups.delete(c); });
+}
+
+el.results.addEventListener("click", (e) => {
+  const summary = e.target.closest("details.more > summary");
+  if (!summary) return;
+  const card = summary.closest(".card");
+  if (card.querySelector("details.more").open) return;         // vai fechar; tratado em "toggle"
+  const top = card.getBoundingClientRect().top;
+  const row = [...el.results.querySelectorAll(".card")]
+    .filter((c) => Math.abs(c.getBoundingClientRect().top - top) < 2);
+  const group = frozenGroups.get(card) || new Set(row);
+  row.forEach((c) => {
+    if (c === card) return;
+    if (!c.style.height) c.style.height = `${c.getBoundingClientRect().height}px`;
+    group.add(c); frozenGroups.set(c, group);
+  });
+  card.style.height = "";                                         // o card aberto cresce livremente
+  group.add(card); frozenGroups.set(card, group);
+});
+
+// "toggle" não propaga; por isso o listener usa a fase de captura
+el.results.addEventListener("toggle", (e) => {
+  const details = e.target;
+  if (!details.matches("details.more") || details.open) return;
+  const card = details.closest(".card");
+  const group = frozenGroups.get(card);
+  if (!group) return;
+  const anyOpen = [...group].some((c) => c.isConnected && c.querySelector("details.more").open);
+  if (!anyOpen) releaseRow(group);
+}, true);
+
+window.addEventListener("resize", () => {
+  frozenGroups.forEach((group) => releaseRow(group));
+});
+
+el.more.addEventListener("click", (e) => { if (e.target.closest("#load-more")) runSearch(true); });
+
+el.toggle.addEventListener("click", () => {
+  const open = el.filters.classList.toggle("open");
+  el.toggle.setAttribute("aria-expanded", open);
+});
+
+document.addEventListener("keydown", (e) => {
+  const tag = (e.target.tagName || "").toLowerCase();
+  if (e.key === "/" && !["input", "select", "textarea"].includes(tag)) { e.preventDefault(); el.q.focus(); }
+});
+
+/* ---------- início ---------- */
+buildFacets();
+renderControls();
+runSearch(false);
+</script>
+</body>
+</html>
