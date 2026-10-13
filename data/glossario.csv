@@ -1,0 +1,54 @@
+# Glossário de tradução (rascunho). CONFIRA CADA TERMO com o seu livro em português e corrija à vontade:
+# ele é usado no prompt da IA e na verificação final (avisa quando um termo do inglês aparece sem o equivalente).
+# Colunas: en,pt. Linhas começadas com # são ignoradas.
+en,pt
+spell slot,espaço de magia
+saving throw,salvaguarda
+Hit Points,Pontos de Vida
+Armor Class,Classe de Armadura
+spell attack,ataque mágico
+force, energia
+spellcasting ability modifier, atributo de conjuração
+attack roll,jogada de ataque
+Concentration,Concentração
+Bonus Action,Ação Bônus
+Reaction,Reação
+Magic action,ação Usar Magia
+Opportunity Attack,Ataque de Oportunidade
+difficult terrain,terreno difícil
+Proficiency Bonus,Bônus de Proficiência
+Challenge Rating,Nível de Desafio
+Temporary Hit Points,Pontos de Vida Temporários
+Sphere,Esfera
+Cone,Cone
+Cube,Cubo
+Cylinder,Cilindro
+Line,Linha
+Emanation,Emanação
+Cantrip Upgrade,Aprimoramento de Truque
+Using a Higher-Level Spell Slot,Usando um Espaço de Magia de Círculo Superior
+Charmed,Enfeitiçado
+Frightened,Amedrontado
+Paralyzed,Paralisado
+Invisible,Invisível
+Incapacitated,Incapacitado
+Prone,Caído
+Restrained,Contido
+Stunned,Atordoado
+Poisoned,Envenenado
+Blinded,Cego
+Deafened,Surdo
+Petrified,Petrificado
+Unconscious,Inconsciente
+Exhaustion,Exaustão
+Bard,Bardo
+Cleric,Clérigo
+Druid,Druida
+Paladin,Paladino
+Ranger,Guardião
+Sorcerer,Feiticeiro
+Warlock,Bruxo
+Wizard,Mago
+GP,PO
+SP,PP
+CP,PC

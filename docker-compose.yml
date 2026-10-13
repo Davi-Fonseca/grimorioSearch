@@ -21,6 +21,7 @@ services:
       - "127.0.0.1:8000:8000"
     environment:
       - ES_URL=http://elasticsearch:9200
+      - ES_INDEX=spells-2024-pt
     volumes:
       - .:/app            # a pasta do projeto fica visível dentro do container
     working_dir: /app

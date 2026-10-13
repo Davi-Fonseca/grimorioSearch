@@ -1,0 +1,340 @@
+id,nome
+acid-arrow,Flecha Ácida
+acid-splash,Bolha Ácida
+aid,Auxílio
+alarm,Alarme
+alter-self,Alterar-se
+animal-friendship,Amizade Animal
+animal-messenger,Mensageiro Animal
+animal-shapes,Formas Animais
+animate-dead,Animar Mortos
+animate-objects,Animar Objetos
+antilife-shell,Cúpula Antivida
+antimagic-field,Campo Antimagia
+antipathy-sympathy,Antipatia/Simpatia
+arcane-eye,Olho Arcano
+arcane-hand,Mão Arcana
+arcane-lock,Tranca Arcana
+arcane-sword,Espada Arcana
+arcanists-magic-aura,Aura Mágica do Arcanista
+astral-projection,Projeção Astral
+augury,Augúrio
+aura-of-life,Aura de Vida
+awaken,Despertar
+bane,Perdição
+banishment,Banimento
+barkskin,Pele-Casca
+beacon-of-hope,Farol de Esperança
+befuddlement,Atordoamento Mental
+bestow-curse,Rogar Maldição
+black-tentacles,Tentáculos Negros
+blade-barrier,Barreira de Lâminas
+bless,Benção
+blight,Definhamento
+blindness-deafness,Cegueira/Surdez
+blink,Piscar
+blur,Ofuscação
+burning-hands,Mãos Flamejantes
+call-lightning,Invocação de Relâmpagos
+calm-emotions,Acalmar Emoções
+chain-lightning,Corrente de Relâmpagos
+charm-monster,Encantar Monstro
+charm-person,Encantar Pessoa
+chill-touch,Toque Necrótico
+chromatic-orb,Orbe Cromático
+circle-of-death,Círculo da Morte
+clairvoyance,Clarividência
+clone,Clone
+cloudkill,Névoa Assassina
+color-spray,Leque Cromático
+command,Comando
+commune,Comunhão
+commune-with-nature,Comunhão com a Natureza
+comprehend-languages,Compreender Idiomas
+compulsion,Compulsão
+cone-of-cold,Cone de Frio
+confusion,Confusão
+conjure-animals,Invocar Animais
+conjure-celestial,Invocar Celestial
+conjure-elemental,Invocar Elemental
+conjure-fey,Invocar Feérico
+conjure-minor-elementals,Invocar Elementais Menores
+conjure-woodland-beings,Invocar Seres da Floresta
+contact-other-plane,Contato Extraplanar
+contagion,Contágio
+contingency,Contingência
+continual-flame,Chama Contínua
+control-water,Controlar Água
+control-weather,Controlar o Clima
+counterspell,Contramagia
+create-food-and-water,Criar Comida e Água
+create-or-destroy-water,Criar ou Destruir Água
+create-undead,Criar Mortos-Vivos
+creation,Criação
+cure-wounds,Curar Ferimentos
+dancing-lights,Luzes Dançantes
+darkness,Escuridão
+darkvision,Visão no Escuro
+daylight,Luz do Dia
+death-ward,Proteção Contra a Morte
+delayed-blast-fireball,Bola de Fogo Adiável
+demiplane,Semiplano
+detect-evil-and-good,Detectar o Bem e o Mal
+detect-magic,Detectar Magia
+detect-poison-and-disease,Detectar Veneno e Doenças
+detect-thoughts,Detectar Pensamentos
+dimension-door,Porta Dimensional
+disguise-self,Disfarçar-se
+disintegrate,Desintegrar
+dispel-evil-and-good,Dissipar o Bem e o Mal
+dispel-magic,Dissipar Magia
+dissonant-whispers,Sussurros Dissonantes
+divination,Presságio
+divine-favor,Favor Divino
+divine-smite,Destruição Divina
+divine-word,Palavra Divina
+dominate-beast,Dominar Besta
+dominate-monster,Dominar Monstro
+dominate-person,Dominar Pessoa
+dragons-breath,Sopro de Dragão
+dream,Sonho
+druidcraft,Arte Druídica
+earthquake,Terremoto
+eldritch-blast,Raio Místico
+elementalism,Elementalismo
+enhance-ability,Aprimorar Atributo
+enlarge-reduce,Aumentar/Reduzir
+ensnaring-strike,Golpe Constritor
+entangle,Emaranhar
+enthrall,Cativar
+etherealness,Forma Etérea
+expeditious-retreat,Retirada Acelerada
+eyebite,Mau Olhado
+fabricate,Fabricação
+faerie-fire,Fogo das Fadas
+faithful-hound,Cão Fiel
+false-life,Vitalidade Vazia
+fear,Medo
+feather-fall,Queda Suave
+find-familiar,Convocar Familiar
+find-steed,Convocar Montaria
+find-the-path,Encontrar o Caminho
+find-traps,Encontrar Armadilhas
+finger-of-death,Dedo da Morte
+fire-bolt,Raio de Fogo
+fire-shield,Escudo de Fogo
+fire-storm,Tempestade de Fogo
+fireball,Bola de Fogo
+flame-blade,Lâmina Flamejante
+flame-strike,Coluna de Chamas
+flaming-sphere,Esfera Flamejante
+flesh-to-stone,De Carne para Pedra
+floating-disk,Disco Flutuante
+fly,Voo
+fog-cloud,Névoa Obscurecente
+forbiddance,Proibição
+forcecage,Gaiola de Força
+foresight,Precognição
+freedom-of-movement,Movimentação Livre
+freezing-sphere,Esfera Congelante
+gaseous-form,Forma Gasosa
+gate,Portal
+geas,Geas
+gentle-repose,Consolo dos Mortos
+giant-insect,Inseto Gigante
+glibness,Lábia
+globe-of-invulnerability,Globo de Invulnerabilidade
+glyph-of-warding,Glifo de Proteção
+goodberry,Bom Fruto
+grease,Graxa
+greater-invisibility,Invisibilidade Maior
+greater-restoration,Restauração Maior
+guardian-of-faith,Guardião da Fé
+guards-and-wards,Guardas e Proteções
+guidance,Orientação
+guiding-bolt,Raio Guia
+gust-of-wind,Lufada de Vento
+hallow,Santuário Sagrado
+hallucinatory-terrain,Terreno Alucinatório
+harm,Moléstia
+haste,Celeridade
+heal,Cura Completa
+healing-word,Palavras Curativa
+heat-metal,Esquentar Metal
+hellish-rebuke,Repreensão Diabólica
+heroes-feast,Banquete dos Heróis
+heroism,Heroísmo
+hex,Danação
+hideous-laughter,Gargalhada Nefasta
+hold-monster,Paralisar Monstro
+hold-person,Paralisar Pessoa
+holy-aura,Aura Sagrada
+hunters-mark,Marca do Caçador
+hypnotic-pattern,Padrão Hipnótico
+ice-knife,Faca de Gelo
+ice-storm,Tempestade de Gelo
+identify,Identificação
+illusory-script,Escrita Ilusória
+imprisonment,Aprisionamento
+incendiary-cloud,Nuvem Incendiária
+inflict-wounds,Infligir Ferimentos
+insect-plague,Praga de Insetos
+instant-summons,Invocação Instantânea
+invisibility,Invisibilidade
+irresistible-dance,Dança Irresistível
+jump,Salto
+knock,Arrombar
+legend-lore,Lendas e Histórias
+lesser-restoration,Restauração Menor
+levitate,Levitação
+light,Luz
+lightning-bolt,Relâmpago
+locate-animals-or-plants,Localizar Animais ou Plantas
+locate-creature,Localizar Criatura
+locate-object,Localizar Objeto
+longstrider,Passos Largos
+mage-armor,Armadura Arcana
+mage-hand,Mãos Mágicas
+magic-circle,Círculo Mágico
+magic-jar,Receptáculo Mágico
+magic-missile,Mísseis Mágicos
+magic-mouth,Boca Mágica
+magic-weapon,Arma Mágica
+magnificent-mansion,Mansão Magnífica
+major-image,Imagem Maior
+mass-cure-wounds,Curar Ferimentos em Massa
+mass-heal,Cura Completa em Massa
+mass-healing-word,Palavra Curativa em Massa
+mass-suggestion,Sugestão em Massa
+maze,Labirinto
+meld-into-stone,Mesclar-se às Rochas
+mending,Reparar
+message,Mensagem
+meteor-swarm,Chuva de Meteoros
+mind-blank,Proteção Mútua
+mind-spike,Espinho Mental
+minor-illusion,Ilusão Menor
+mirage-arcane,Miragem Arcana
+mirror-image,Reflexos
+mislead,Despistar
+misty-step,Passo Nebuloso
+modify-memory,Modificar Memória
+moonbeam,Raio Lunar
+move-earth,Mover Terra
+nondetection,Indetectável
+pass-without-trace,Passos Sem Rastro
+passwall,Criar Passagem
+phantasmal-force,Força Espectral
+phantasmal-killer,Assassino Fantasmagórico
+phantom-steed,Montaria Fantasma
+planar-ally,Aliado Planar
+planar-binding,Âncora Planar
+plane-shift,Mudança de Plano
+plant-growth,Crescimento de Plantas
+poison-spray,Rajada de Veneno
+polymorph,Polimorfia
+power-word-heal,Palavra de Poder: Curar
+power-word-kill,Palavra de Poder: Matar
+power-word-stun,Palavra de Poder: Atordoar
+prayer-of-healing,Oração de Cura
+prestidigitation,Prestidigitação Arcana
+prismatic-spray,Rajada Prismática
+prismatic-wall,Muralha Prismática
+private-sanctum,Santuário Particular
+produce-flame,Criar Chamas
+programmed-illusion,Ilusão Programada
+project-image,Projetar Imagem
+protection-from-energy,Proteção contra Energia
+protection-from-evil-and-good,Proteção contra o Bem e o Mal
+protection-from-poison,Proteção contra Veneno
+purify-food-and-drink,Purificar Comida e Bebida
+raise-dead,Reviver os Mortos
+ray-of-enfeeblement,Raio do Enfraquecimento
+ray-of-frost,Raio de Gelo
+ray-of-sickness,Raio Nauseante
+regenerate,Regeneração
+reincarnate,Reencarnar
+remove-curse,Remover Maldição
+resilient-sphere,Esfera Resiliente
+resistance,Resistência
+resurrection,Ressurreição
+reverse-gravity,Inverter a Gravidade
+revivify,Revivificar
+rope-trick,Corda Extradimensional
+sacred-flame,Chama Sagrada
+sanctuary,Santuário
+scorching-ray,Raio Ardente
+scrying,Vidência
+searing-smite,Destruição Cauterizante
+secret-chest,Baú Secreto
+see-invisibility,Ver o Invisível
+seeming,Similaridade
+sending,Remeter
+sequester,Refugiar
+shapechange,Mudar de Forma
+shatter,Despedaçar
+shield,Escudo Arcano
+shield-of-faith,Escudo da Fé
+shillelagh,Bordão Místico
+shining-smite,Destruição Radiante
+shocking-grasp,Toque Chocante
+silence,Silêncio
+silent-image,Imagem Silenciosa
+simulacrum,Simulacro
+sleep,Sono
+sleet-storm,Tempestade Glacial
+slow,Lentidão
+sorcerous-burst,Explosão Elemental
+spare-the-dying,Acudir os Moribundos
+speak-with-animals,Falar com Animais
+speak-with-dead,Falar com os Mortos
+speak-with-plants,Falar com Plantas
+spider-climb,Escalada de Aranha
+spike-growth,Crescer Espinhos
+spirit-guardians,Guardiões Espirituais
+spiritual-weapon,Arma Espiritual
+starry-wisp,Fagulha Estelar
+stinking-cloud,Núvem Fétida
+stone-shape,Moldar Rochas
+stoneskin,Pele-Rocha
+storm-of-vengeance,Tempestade da Vingança
+suggestion,Sugestão
+summon-dragon,Invocar Dragão
+sunbeam,Raio Solar
+sunburst,Explosão Solar
+symbol,Símbolo
+telekinesis,Telecinese
+telepathic-bond,Ligação Telepática
+teleport,Teleporte
+teleportation-circle,Círculo de Teleporte
+thaumaturgy,Taumaturgia
+thunderwave,Onda Trovejante
+time-stop,Parar o Tempo
+tiny-hut,Pequeno Refúgio
+tongues,Línguas
+transport-via-plants,Transporte via Plantas
+tree-stride,Passo Arbóreo
+true-polymorph,Polimorfia Total
+true-resurrection,Ressurreição Verdadeira
+true-seeing,Visão da Verdade
+true-strike,Golpe Certeiro
+tsunami,Tsunami
+unseen-servant,Servo Invisível
+vampiric-touch,Toque Vampírico
+vicious-mockery,Zombaria Perversa
+vitriolic-sphere,Esfera Vitriólica
+wall-of-fire,Muralha de Fogo
+wall-of-force,Muralha de Energia
+wall-of-ice,Muralha de Gelo
+wall-of-stone,Muralha de Pedra
+wall-of-thorns,Muralha de Espinhos
+warding-bond,Vínculo de Proteção
+water-breathing,Respirar na Água
+water-walk,Caminhar Sobre as Águaa
+web,Teia
+weird,Encarnação Fantasmagórica
+wind-walk,Caminhar no Vento
+wind-wall,Muralha de Vento
+wish,Desejo
+word-of-recall,Palavra de Regresso
+zone-of-truth,Zona da Verdade

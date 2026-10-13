@@ -1,6 +1,6 @@
 # Grimório
 
-Busca de magias de D&D 5ª edição (SRD 5.2, edição 2024) com Elasticsearch, FastAPI e uma interface em HTML.
+Busca de magias de D&D 5ª edição (SRD 5.2, edição 2024) com Elasticsearch, FastAPI e uma interface em HTML/JS.
 Filtros por **círculo**, **classe** e **escola de magia**, mais busca textual.
 
 ```
@@ -10,31 +10,44 @@ navegador ──GET /api/search──▶ FastAPI (app.py) ──▶ Elasticsearc
 
 ## Como rodar
 
-Pré-requisito: Docker e Python.
+Pré-requisito: Docker. Não precisa instalar Python nem dependências na sua máquina.
 
 Mantenha esta estrutura de pastas (a API procura a interface em `static/`):
 
 ```
 grimorio/
-├── app.py  ingest.py  vocab.py  docker-compose.yml
+├── app.py  ingest.py  vocab.py  spells_pt.py  validate_pt.py
+├── docker-compose.yml  requirements.txt
 ├── data/5e-SRD-Spells-2024.json
 └── static/index.html  static/style.css
 ```
 
 ```bash
-# 1. Sobe o Elasticsearch e a API (a primeira vez demora, pois instala as dependências)
-docker compose up -d
-
-# 2. Aguarde ~30 s e indexe as 339 magias (roda dentro do container)
-docker compose exec web python ingest.py --reset
+docker compose up -d --build
 ```
 
-Abra http://localhost:8000. Para checar a conexão com o Elasticsearch: http://localhost:8000/api/health
+É só isso. Na primeira vez ele constrói a imagem (instala as dependências uma única vez), sobe o Elasticsearch,
+espera ele ficar pronto e indexa as 339 magias sozinho. Depois, `docker compose up -d` basta, e em poucos segundos
+o programa está no ar, inclusive depois de desligar o computador.
 
-Se algo não funcionar, `docker compose logs web` mostra o erro da API.
+Abra http://localhost:8000. Para acompanhar a subida: `docker compose logs -f web` (quando aparecer
+`Uvicorn running`, está pronto). Para checar o Elasticsearch: http://localhost:8000/api/health
 
-Os dois serviços só aceitam conexões da sua própria máquina (`127.0.0.1`), porque o Elasticsearch
-daqui roda sem senha.
+Os dois serviços só aceitam conexões da sua própria máquina (`127.0.0.1`), porque o Elasticsearch daqui roda
+sem senha.
+
+**Reindexar do zero** (depois de mudar `ingest.py` ou os dados):
+
+```bash
+docker compose exec web python ingest.py --reset
+
+Para a API usar o índice em português, defina `ES_INDEX=spells-2024-pt` no serviço `web` de
+`docker-compose.yml` e reinicie. Com Docker, rode os comandos com 
+`docker compose exec web python ingest.py --lang pt --reset`.
+```
+
+**Desligar:** `docker compose down` (os dados continuam guardados). `docker compose down -v` apaga também o índice;
+na próxima subida ele é recriado sozinho.
 
 **Sem Docker na API:** suba só o Elasticsearch (`docker compose up -d elasticsearch`), instale
 `pip install -r requirements.txt`, rode `python ingest.py --reset` e `uvicorn app:app --reload`.
@@ -53,8 +66,14 @@ pytest
 | `data/5e-SRD-Spells-2024.json` | Magias do SRD 2024, em inglês (cópia do repositório 5e-bits/5e-database) |
 | `vocab.py` | Escolas, classes e tipos de dano em português |
 | `ingest.py` | Normaliza os dados, cria o índice (mapeamento e analisadores) e indexa |
+| `Dockerfile` | Imagem da API, com as dependências instaladas uma vez |
+| `spells_pt.py` | Esquema, validação e adaptação das magias em português, e cruzamento com o SRD |
+| `validate_pt.py` | Relatório de validação do arquivo em português |
+| `translate_srd.py` | Exporta o SRD em lotes para a IA traduzir, valida e junta as traduções |
+| `data/glossario.csv` | Glossário de termos usado no prompt e na verificação das traduções |
+| `docs/prompt-extracao.md` | Prompt para extrair as magias do PDF |
 | `app.py` | API `/api/search` e `/api/health`; monta a consulta do Elasticsearch |
-| `static/index.html` | Estrutura da interface e lógica |
+| `static/index.html` | Estrutura da interface e lógica (JavaScript) |
 | `static/style.css` | Estilos (identidade visual, layout e responsividade) |
 | `tests/` | Testes da normalização, da consulta e do endpoint |
 
@@ -73,6 +92,59 @@ contagem aplicando todos os filtros *menos o próprio*. Assim, ao marcar "Mago",
 continua mostrando quantas magias o Clérigo teria dentro da seleção atual. Dentro de um mesmo grupo os valores
 são combinados com OU, e entre grupos com E.
 
+## Magias em português (opcional)
+
+O índice padrão usa o SRD 5.2 em inglês. Para ter as magias em português, o caminho recomendado é **traduzir o
+próprio JSON do SRD** com ajuda de uma IA. A IA só traduz os textos (nome, descrição, círculos superiores e
+material); círculo, escola, classes, componentes, concentração e ritual são copiados do SRD por código, então
+não há como a IA errá-los. Tempo de conjuração, alcance e duração também são convertidos por código.
+
+```bash
+# 1. (opcional) revise o glossário: data/glossario.csv, conferindo os termos com o seu livro
+# 2. Gera ~24 lotes de entrada e o prompt em data/traducao/
+python translate_srd.py export
+
+# 3. Para cada lote: cole data/traducao/prompt.txt e depois o entrada-NNN.jsonl na IA,
+#    e salve a resposta (só o JSON) como data/traducao/saida-NNN.jsonl
+
+# 4. Valida as traduções e gera data/spells-pt.jsonl (pode rodar com só alguns lotes prontos)
+python translate_srd.py merge
+
+# 5. Refaz o que deu problema, ou gera só o que falta
+python translate_srd.py export --only fireball,fly
+python translate_srd.py export --pendentes
+
+# 6. Guarda os nomes que você corrigiu, para não se perderem ao retraduzir (rode o merge antes)
+python translate_srd.py nomes
+
+# 7. Retraduz em um lote só as magias cujo texto contém certos termos (ex.: depois de mudar o glossário)
+python translate_srd.py export --contendo "Force damage,spellcasting ability modifier" --budget 0
+
+# 8. Indexa num índice próprio (spells-2024-pt), com o analisador "portuguese"
+python ingest.py --lang pt --reset
+```
+
+Os nomes guardados em `data/nomes_pt.csv` valem por cima de qualquer tradução nova, e o `export` os envia à IA
+como `nome_pt`, para ela usar exatamente aquele texto. Um arquivo `saida` com número maior substitui as traduções
+de um arquivo mais antigo (a nova só entra se for válida; se falhar, a antiga continua valendo).
+
+O `merge` recusa a tradução (erro) quando as expressões de dados mudam (8d6, 1d4 + 1) e avisa quando: sobrou
+unidade em inglês, uma distância não foi convertida para metros, o texto ficou em inglês, o número de parágrafos ou
+o tamanho destoam do original, ou um termo do glossário aparece sem o equivalente. Os avisos não impedem o uso, mas
+vale revisar. Os nomes das magias são o ponto mais frágil: a IA pode inventar um nome que não é o do livro,
+então confira a lista (`data/spells-pt.jsonl`) com o seu livro.
+
+Para a API usar o índice em português, defina `ES_INDEX=spells-2024-pt` no serviço `web` do
+`docker-compose.yml` e reinicie. Com Docker, rode os comandos com `docker compose exec web python ...`.
+
+**Rota alternativa: extrair do PDF do livro.** Se preferir usar o texto do livro, veja `docs/prompt-extracao.md` e
+`python validate_pt.py` (valida, cruza com o SRD e sugere o mapa de nomes). Indexe com
+`python ingest.py --lang pt --reset` (e `--somente-srd` com o mapa de nomes, para deixar de fora o que não é do SRD).
+
+**Licença.** O SRD 5.2 é CC BY 4.0, e essa licença vale para o conteúdo do SRD em qualquer idioma: copiar, adaptar
+e traduzir são permitidos com atribuição, indicando que houve mudanças. A interface já mostra a atribuição, dizendo
+que o texto foi traduzido e adaptado. Na rota da tradução própria, o texto em português é seu (feito a partir do
+SRD), então não há dúvida de direitos de editora.
 
 ## Licença e créditos
 
@@ -81,4 +153,5 @@ available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Cr
 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.
 
 Os dados em JSON vêm do projeto [5e-bits/5e-database](https://github.com/5e-bits/5e-database), cujo código é
-MIT. O README desse projeto cita também a OGL 1.0a para o material de base;
+MIT. O README desse projeto cita também a OGL 1.0a para o material de base; confira lá os termos atuais antes
+de publicar.

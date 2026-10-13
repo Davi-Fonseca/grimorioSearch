@@ -9,17 +9,18 @@ from app import SearchParams, build_search, filter_clauses, shape_response, text
 
 
 # ---------- construção da consulta ----------
-def test_sem_busca_usa_match_all_e_ordena_por_nome():
+def test_sem_busca_usa_match_all_e_ordena_por_circulo():
     b = build_search(SearchParams())
     assert b["query"] == {"match_all": {}}
-    assert b["sort"] == [{"name.raw": "asc"}]          # relevância sem texto cai para nome
+    assert b["sort"] == [{"level": "asc"}, {"name.raw": "asc"}]
     assert "post_filter" not in b
     assert b["from_"] == 0 and b["size"] == 48
 
 
-def test_busca_textual_ordena_por_relevancia():
+def test_busca_textual_tambem_ordena_por_circulo_e_nunca_por_relevancia():
     b = build_search(SearchParams(q="fire"))
-    assert b["sort"][0] == {"_score": "desc"}
+    assert b["sort"] == [{"level": "asc"}, {"name.raw": "asc"}]
+    assert all("_score" not in c for c in b["sort"])
     fields = b["query"]["bool"]["should"][2]["multi_match"]["fields"]
     assert "name^4" in fields and "labels_pt^2" in fields
 
@@ -48,9 +49,9 @@ def test_facetas_disjuntivas_ignoram_o_proprio_filtro():
     assert all({"term": {"ritual": True}} in v for v in por_faceta.values())
 
 
-def test_ordenar_por_circulo():
-    b = build_search(SearchParams(sort="level"))
-    assert b["sort"] == [{"level": "asc"}, {"name.raw": "asc"}]
+def test_ordenar_por_nome():
+    b = build_search(SearchParams(sort="name"))
+    assert b["sort"] == [{"name.raw": "asc"}]
 
 
 def test_text_query_vazio():
@@ -118,6 +119,7 @@ def test_endpoint_valida_entradas(client):
     c, _ = client
     assert c.get("/api/search", params={"limit": 1000}).status_code == 422
     assert c.get("/api/search", params={"sort": "aleatorio"}).status_code == 422
+    assert c.get("/api/search", params={"sort": "relevance"}).status_code == 422   # não existe mais
     assert c.get("/api/search", params={"q": "x" * 300}).status_code == 422
 
 

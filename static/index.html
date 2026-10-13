@@ -6,33 +6,40 @@
 <title>Grimório – busca de magias de D&amp;D 5e</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Libre+Caslon+Text:ital,wght@1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="rough" x="-2%" y="-2%" width="104%" height="104%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="7" result="n"/>
-    <feDisplacementMap in="SourceGraphic" in2="n" scale="5" xChannelSelector="R" yChannelSelector="G"/>
+  <filter id="frameInk" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="3" result="c"/>
+  <feDisplacementMap in="SourceGraphic" in2="c" scale="5" xChannelSelector="R" yChannelSelector="G" result="w"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="8" result="m"/>
+  <feDisplacementMap in="w" in2="m" scale="2.4" xChannelSelector="G" yChannelSelector="B" result="r"/>
+  <feGaussianBlur in="r" stdDeviation="0.9" result="b"/>
+  <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -0.7" result="th"/>
+  <feGaussianBlur in="th" stdDeviation="0.45"/>
   </filter>
-  <filter id="ink" x="-4%" y="-10%" width="108%" height="125%">
-    <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="3" result="n"/>
-    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+  <filter id="logoInk" x="-3%" y="-12%" width="106%" height="124%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency="0.00042367" numOctaves="2" seed="3" result="c"/>
+  <feDisplacementMap in="SourceGraphic" in2="c" scale="32.782" xChannelSelector="R" yChannelSelector="G" result="w"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.003813" numOctaves="2" seed="8" result="m"/>
+  <feDisplacementMap in="w" in2="m" scale="16.661" xChannelSelector="G" yChannelSelector="B" result="r"/>
+  <feGaussianBlur in="r" stdDeviation="10.621" result="b"/>
+  <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -0.7" result="th"/>
+  <feGaussianBlur in="th" stdDeviation="9.6559"/>
   </filter>
 </svg>
-<div class="frame" aria-hidden="true"></div>
 
+<div class="page">
 <header class="top">
   <div class="top-inner">
     <div class="brand">
-      <div class="wordmark">
-        <h1>GRIMÓRIO</h1>
-        <svg class="mark" viewBox="0 0 66 21" aria-hidden="true">
-          <path d="M3 11H46" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-          <path d="M55 1l2.6 7.4L65 11l-7.4 2.6L55 21l-2.6-7.4L45 11l7.4-2.6z" fill="currentColor"/>
-        </svg>
-      </div>
+      <h1 class="logo" aria-label="Grimório">
+        <svg viewBox="0 0 7081 1240" aria-hidden="true" focusable="false">
+<g filter="url(#logoInk)" transform="translate(90 1010.2) scale(1 -1)" fill="currentColor"><path transform="translate(0.0 0)" d="M784 280V115Q760 85 707.0 55.0Q654 25 581.5 5.5Q509 -14 425 -14Q307 -14 219.5 29.5Q132 73 83.5 155.0Q35 237 35 352Q35 465 82.5 546.0Q130 627 220.0 670.5Q310 714 435 714Q490 714 547.5 707.5Q605 701 654.5 691.0Q704 681 733 668L723 477H714Q693 552 656.0 592.5Q619 633 574.5 648.5Q530 664 485 664Q405 664 354.0 626.0Q303 588 279.0 516.5Q255 445 255 342Q255 248 275.5 179.0Q296 110 338.5 73.0Q381 36 447 36Q480 36 510.0 48.0Q540 60 559.5 84.0Q579 108 579 143L580 280Q580 325 529 325H513V335H849V325H834Q804 325 792 310Q783 299 784 280Z"/><path transform="translate(981.0 0)" d="M112 73V627Q111 653 92.5 671.5Q74 690 48 690H35V700H426Q471 700 518.0 692.0Q565 684 604.0 663.5Q643 643 667.0 606.0Q691 569 691 511Q691 473 677.0 432.5Q663 392 628.5 361.5Q594 331 531 321Q573 309 604.0 280.0Q635 251 653 221Q655 218 663.0 204.0Q671 190 683.5 169.5Q696 149 710.0 127.0Q724 105 738 86Q761 55 778.0 39.0Q795 23 812.5 17.0Q830 11 854 10V0H729Q669 0 618.0 7.0Q567 14 526.5 38.0Q486 62 455 114Q444 132 437.0 150.0Q430 168 425.0 185.0Q420 202 416.5 217.5Q413 233 410.0 247.5Q407 262 403 275Q393 311 379.0 324.0Q365 337 351 342V352H367Q395 352 417.0 365.0Q439 378 454.0 405.0Q469 432 474 475Q475 483 476.0 492.5Q477 502 476 516Q472 590 439.5 619.0Q407 648 362 648H318V73Q318 47 337.0 28.5Q356 10 382 10H394V0H35V10H48Q74 10 92.5 28.5Q111 47 112 73Z"/><path transform="translate(1894.0 0)" d="M107 73V627Q106 653 87.5 671.5Q69 690 43 690H30V700H389V690H376Q350 690 331.5 671.5Q313 653 312 627V73Q313 47 331.5 28.5Q350 10 376 10H389V0H30V10H43Q69 10 87.5 28.5Q106 47 107 73Z"/><path transform="translate(2432.0 0)" d="M805 714H814L905 73Q910 43 930.5 26.5Q951 10 978 10H994V0H639V9H655Q671 9 682.5 22.5Q694 36 694 52V53L656 344L486 92L475 74Q464 56 453.5 29.5Q443 3 444 -24H435L175 336L140 56V52Q140 36 151.5 22.5Q163 9 179 9H195V0H-25V10H-9Q18 10 39.0 26.5Q60 43 64 73L152 714H161L497 255Z"/><path transform="translate(3520.0 0)" d="M450 714Q579 714 672.5 670.5Q766 627 816.0 546.0Q866 465 866 350Q866 236 816.0 154.5Q766 73 672.5 29.5Q579 -14 450 -14Q321 -14 228.0 29.5Q135 73 85.0 154.0Q35 235 35 350Q35 464 85.0 545.5Q135 627 228.0 670.5Q321 714 450 714ZM450 36Q512 36 555.5 73.5Q599 111 622.0 181.0Q645 251 645 350Q645 449 622.0 519.0Q599 589 555.5 626.5Q512 664 450 664Q389 664 345.5 626.5Q302 589 279.0 519.0Q256 449 256 350Q256 251 279.0 181.0Q302 111 345.5 73.5Q389 36 450 36Z"/><path transform="translate(4545.0 0)" d="M112 73V627Q111 653 92.5 671.5Q74 690 48 690H35V700H426Q471 700 518.0 692.0Q565 684 604.0 663.5Q643 643 667.0 606.0Q691 569 691 511Q691 473 677.0 432.5Q663 392 628.5 361.5Q594 331 531 321Q573 309 604.0 280.0Q635 251 653 221Q655 218 663.0 204.0Q671 190 683.5 169.5Q696 149 710.0 127.0Q724 105 738 86Q761 55 778.0 39.0Q795 23 812.5 17.0Q830 11 854 10V0H729Q669 0 618.0 7.0Q567 14 526.5 38.0Q486 62 455 114Q444 132 437.0 150.0Q430 168 425.0 185.0Q420 202 416.5 217.5Q413 233 410.0 247.5Q407 262 403 275Q393 311 379.0 324.0Q365 337 351 342V352H367Q395 352 417.0 365.0Q439 378 454.0 405.0Q469 432 474 475Q475 483 476.0 492.5Q477 502 476 516Q472 590 439.5 619.0Q407 648 362 648H318V73Q318 47 337.0 28.5Q356 10 382 10H394V0H35V10H48Q74 10 92.5 28.5Q111 47 112 73Z"/><path transform="translate(1894.0 0)" d="M107 73V627Q106 653 87.5 671.5Q69 690 43 690H30V700H389V690H376Q350 690 331.5 671.5Q313 653 312 627V73Q313 47 331.5 28.5Q350 10 376 10H389V0H30V10H43Q69 10 87.5 28.5Q106 47 107 73Z"/><path transform="translate(2432.0 0)" d="M805 714H814L905 73Q910 43 930.5 26.5Q951 10 978 10H994V0H639V9H655Q671 9 682.5 22.5Q694 36 694 52V53L656 344L486 92L475 74Q464 56 453.5 29.5Q443 3 444 -24H435L175 336L140 56V52Q140 36 151.5 22.5Q163 9 179 9H195V0H-25V10H-9Q18 10 39.0 26.5Q60 43 64 73L152 714H161L497 255Z"/><path transform="translate(3520.0 0)" d="M450 714Q579 714 672.5 670.5Q766 627 816.0 546.0Q866 465 866 350Q866 236 816.0 154.5Q766 73 672.5 29.5Q579 -14 450 -14Q321 -14 228.0 29.5Q135 73 85.0 154.0Q35 235 35 350Q35 464 85.0 545.5Q135 627 228.0 670.5Q321 714 450 714ZM450 36Q512 36 555.5 73.5Q599 111 622.0 181.0Q645 251 645 350Q645 449 622.0 519.0Q599 589 555.5 626.5Q512 664 450 664Q389 664 345.5 626.5Q302 589 279.0 519.0Q256 449 256 350Q256 251 279.0 181.0Q302 111 345.5 73.5Q389 36 450 36Z"/><path transform="translate(4545.0 0)" d="M112 73V627Q111 653 92.5 671.5Q74 690 48 690H35V700H426Q471 700 518.0 692.0Q565 684 604.0 663.5Q643 643 667.0 606.0Q691 569 691 511Q691 473 677.0 432.5Q663 392 628.5 361.5Q594 331 531 321Q573 309 604.0 280.0Q635 251 653 221Q655 218 663.0 204.0Q671 190 683.5 169.5Q696 149 710.0 127.0Q724 105 738 86Q761 55 778.0 39.0Q795 23 812.5 17.0Q830 11 854 10V0H729Q669 0 618.0 7.0Q567 14 526.5 38.0Q486 62 455 114Q444 132 437.0 150.0Q430 168 425.0 185.0Q420 202 416.5 217.5Q413 233 410.0 247.5Q407 262 403 275Q393 311 379.0 324.0Q365 337 351 342V352H367Q395 352 417.0 365.0Q439 378 454.0 405.0Q469 432 474 475Q475 483 476.0 492.5Q477 502 476 516Q472 590 439.5 619.0Q407 648 362 648H318V73Q318 47 337.0 28.5Q356 10 382 10H394V0H35V10H48Q74 10 92.5 28.5Q111 47 112 73Z"/><path transform="translate(5458.0 0)" d="M107 73V627Q106 653 87.5 671.5Q69 690 43 690H30V700H389V690H376Q350 690 331.5 671.5Q313 653 312 627V73Q313 47 331.5 28.5Q350 10 376 10H389V0H30V10H43Q69 10 87.5 28.5Q106 47 107 73Z"/><path transform="translate(5996.0 0)" d="M450 714Q579 714 672.5 670.5Q766 627 816.0 546.0Q866 465 866 350Q866 236 816.0 154.5Q766 73 672.5 29.5Q579 -14 450 -14Q321 -14 228.0 29.5Q135 73 85.0 154.0Q35 235 35 350Q35 464 85.0 545.5Q135 627 228.0 670.5Q321 714 450 714ZM450 36Q512 36 555.5 73.5Q599 111 622.0 181.0Q645 251 645 350Q645 449 622.0 519.0Q599 589 555.5 626.5Q512 664 450 664Q389 664 345.5 626.5Q302 589 279.0 519.0Q256 449 256 350Q256 251 279.0 181.0Q302 111 345.5 73.5Q389 36 450 36Z"/><polygon points="4173.9,629.1 4362.9,900.2 4444.9,836.2 4227.5,587.2"/><circle cx="4403.9" cy="868.2" r="52"/><polygon points="4195.0,701.5 4211.0,722.0 4308.7,645.6 4292.7,625.1"/><rect x="0" y="-100" width="6901.0" height="24"/><rect x="0" y="-46" width="6901.0" height="13"/></g><g transform="translate(90 1010.2) scale(1 -1)" fill="currentColor"><path transform="translate(3520.0 0)" d="M450 36Q512 36 555.5 73.5Q599 111 622.0 181.0Q645 251 645 350Q645 449 622.0 519.0Q599 589 555.5 626.5Q512 664 450 664Q389 664 345.5 626.5Q302 589 279.0 519.0Q256 449 256 350Q256 251 279.0 181.0Q302 111 345.5 73.5Q389 36 450 36Z" fill="currentColor" fill-opacity="0.22"/><path d="M3896.3 503.4 A120.6 194.7 0 0 1 3850.2 363.6" fill="none" style="stroke: var(--shine)" stroke-width="20" stroke-linecap="round"/><circle cx="3861.2" cy="267.7" r="11.0" style="fill: var(--shine)"/></g></svg>
+      </h1>
       <span class="tagline">Magias de D&amp;D 5ª edição</span>
     </div>
     <div class="search">
@@ -78,7 +85,6 @@
       <div class="total" id="total" aria-live="polite"></div>
       <label class="sort">Ordenar por
         <select id="sort">
-          <option value="relevance">Relevância</option>
           <option value="name">Nome (A–Z)</option>
           <option value="level">Círculo</option>
         </select>
@@ -90,16 +96,13 @@
   </section>
 </main>
 
-<footer>
+<footer id="footer">
   <p>Magias do SRD 5.2 (edição 2024 de D&amp;D). Os textos das magias estão em inglês, e os filtros, rótulos, alcances e durações foram traduzidos e convertidos para o sistema métrico.</p>
   <p>This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </footer>
+</div>
 
 <script>
-/* ================================================================
-   Interface do Grimório. A busca e os filtros rodam no Elasticsearch,
-   via GET /api/search (ver app.py). Aqui ficam só o estado e o desenho.
-   ================================================================ */
 const PAGE = 48;
 
 const SCHOOLS = {
@@ -123,13 +126,12 @@ const byPt = (map) => Object.keys(map).sort((a, b) => {
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const levelLabel = (l) => (l === 0 ? "Truque" : `${l}º círculo`);
 
-/* ---------- estado ---------- */
 const state = {
   q: "", levels: new Set(), schools: new Set(), classes: new Set(),
-  concentration: false, ritual: false, sort: "relevance"
+  concentration: false, ritual: false, sort: "level"
 };
 let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {} } };
-let status = "loading";            // loading | ok | error
+let status = "loading";
 let controller = null;
 let timer = null;
 
@@ -141,7 +143,6 @@ const clearFilters = () => {
   state.concentration = false; state.ritual = false;
 };
 
-/* ---------- chamada à API ---------- */
 function queryString(offset) {
   const p = new URLSearchParams();
   if (state.q.trim()) p.set("q", state.q.trim());
@@ -157,7 +158,7 @@ function queryString(offset) {
 }
 
 async function runSearch(append = false) {
-  if (controller) controller.abort();           // descarta a busca anterior
+  if (controller) controller.abort();
   controller = new AbortController();
   const offset = append ? data.hits.length : 0;
   el.results.classList.add("results-busy");
@@ -178,21 +179,26 @@ async function runSearch(append = false) {
   renderResults();
 }
 
-// Atualiza os controles na hora e dispara a busca (com atraso ao digitar).
 function changed(delay = 0) {
   renderControls();
   clearTimeout(timer);
   timer = setTimeout(() => runSearch(false), delay);
 }
 
-/* ---------- desenho ---------- */
 const $ = (sel) => document.querySelector(sel);
 const el = {
   q: $("#q"), levels: $("#levels"), schools: $("#schools"), classes: $("#classes"),
   conc: $("#f-conc"), ritual: $("#f-ritual"), total: $("#total"), sort: $("#sort"),
   chips: $("#chips"), results: $("#results"), more: $("#more"),
-  filters: $("#filters"), toggle: $("#toggle-filters")
+  filters: $("#filters"), toggle: $("#toggle-filters"), footer: $("#footer")
 };
+const FOOTER_EN = el.footer.innerHTML;
+
+function updateFooter(spell) {
+  if (!spell || spell.lang !== "pt") { el.footer.innerHTML = FOOTER_EN; return; }
+  el.footer.innerHTML = `<p>Magias em português. Fonte: ${esc(spell.source)}.</p>
+  <p>This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, translated and adapted into Portuguese. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>`;
+}
 
 function buildFacets() {
   el.levels.innerHTML = Array.from({ length: 10 }, (_, l) =>
@@ -200,7 +206,7 @@ function buildFacets() {
   ).join("");
   el.schools.innerHTML = byPt(SCHOOLS).map((k) =>
     `<label class="opt" data-school="${k}"><input type="checkbox" value="${k}">
-       <span class="dot" style="background:${SCHOOLS[k].color}"></span>
+       <span class="losango" style="background:${SCHOOLS[k].color}"></span>
        <span class="name">${SCHOOLS[k].pt}</span><span class="count"></span></label>`
   ).join("");
   el.classes.innerHTML = byPt(CLASSES).map((k) =>
@@ -213,7 +219,6 @@ function chipHtml(kind, value, label) {
   return `<button type="button" class="chip" data-kind="${kind}" data-value="${esc(value)}" aria-label="Remover filtro: ${esc(label)}">${esc(label)} <span aria-hidden="true">×</span></button>`;
 }
 
-// Parte que depende só do estado local (seleções)
 function renderControls() {
   el.levels.querySelectorAll(".circ").forEach((b) =>
     b.setAttribute("aria-pressed", state.levels.has(Number(b.dataset.level))));
@@ -227,6 +232,8 @@ function renderControls() {
   });
   el.conc.checked = state.concentration;
   el.ritual.checked = state.ritual;
+  $("#opt-conc").classList.toggle("on", state.concentration);
+  $("#opt-ritual").classList.toggle("on", state.ritual);
 
   const chips = [];
   [...state.levels].sort((a, b) => a - b).forEach((l) => chips.push(chipHtml("levels", l, levelLabel(l))));
@@ -240,7 +247,6 @@ function renderControls() {
   el.toggle.textContent = act ? `Filtros (${act})` : "Filtros";
 }
 
-// Contagens vêm do Elasticsearch (agregações)
 function renderFacetCounts() {
   const f = data.facets;
   el.levels.querySelectorAll(".circ").forEach((b) => {
@@ -272,7 +278,7 @@ function cardHtml(s) {
     <div class="card-top"><span class="lvl">${levelLabel(s.level)}</span><span class="tags">${tags}</span></div>
     <h2>${esc(s.name)}</h2>
     <div class="school-row">
-      <span class="school-line"><span class="dot" style="background:${school.color}"></span>${school.pt}</span>
+      <span class="school-line"><span class="losango" style="background:${school.color}"></span>${school.pt}</span>
       <span class="classes">${classes}</span>
     </div>
     <dl class="meta">
@@ -282,7 +288,7 @@ function cardHtml(s) {
     </dl>
     <p class="summary">${esc(s.summary)}</p>
     <details class="more">
-      <summary>Descrição completa (em inglês)</summary>
+      <summary>${s.lang === "pt" ? "Descrição completa" : "Descrição completa (em inglês)"}</summary>
       <p class="full">${esc(s.description)}</p>
       ${s.higher_level ? `<p class="full"><strong>Em círculos superiores.</strong> ${esc(s.higher_level)}</p>` : ""}
       ${comps ? `<p class="comp">Componentes: ${esc(comps)}</p>` : ""}
@@ -297,15 +303,14 @@ function renderResults() {
     el.total.textContent = "";
     el.more.innerHTML = "";
     el.results.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
-      <strong>Não foi possível buscar as magias</strong>
-      Confirme que o Elasticsearch está no ar (<code>docker compose up -d</code>), que as magias foram
-      indexadas (<code>python ingest.py --reset</code>) e que o servidor está rodando
-      (<code>uvicorn app:app</code>).<br><br>
+      <strong>Não foi possível carregar as magias</strong>
+      A busca está indisponível no momento. Verifique sua conexão e tente novamente em instantes.<br><br>
       <button type="button" class="link-btn" id="retry">Tentar de novo</button></div>`;
     return;
   }
 
   renderFacetCounts();
+  if (data.hits.length) updateFooter(data.hits[0]);
   const n = data.total;
   el.total.innerHTML = `${n} ${n === 1 ? "magia" : "magias"} <small>de ${data.totalAll}</small>`;
 
@@ -322,7 +327,6 @@ function renderResults() {
     : "";
 }
 
-/* ---------- eventos ---------- */
 function resetAll() { clearFilters(); state.q = ""; el.q.value = ""; changed(); }
 
 el.q.addEventListener("input", () => { state.q = el.q.value; changed(180); });
@@ -356,9 +360,7 @@ el.results.addEventListener("click", (e) => {
   const b = e.target.closest(".cls"); if (!b) return;
   toggle(state.classes, b.dataset.class); changed();
 });
-/* Abrir a descrição de um card empurra as linhas de baixo, mas os vizinhos da mesma linha
-   mantêm a altura que tinham (sem isso, o grid esticaria todos ao tamanho do card aberto). */
-const frozenGroups = new Map();   // card -> conjunto de cards da mesma linha
+const frozenGroups = new Map();
 
 function releaseRow(group) {
   group.forEach((c) => { c.style.height = ""; frozenGroups.delete(c); });
@@ -368,7 +370,7 @@ el.results.addEventListener("click", (e) => {
   const summary = e.target.closest("details.more > summary");
   if (!summary) return;
   const card = summary.closest(".card");
-  if (card.querySelector("details.more").open) return;         // vai fechar; tratado em "toggle"
+  if (card.querySelector("details.more").open) return;
   const top = card.getBoundingClientRect().top;
   const row = [...el.results.querySelectorAll(".card")]
     .filter((c) => Math.abs(c.getBoundingClientRect().top - top) < 2);
@@ -378,11 +380,10 @@ el.results.addEventListener("click", (e) => {
     if (!c.style.height) c.style.height = `${c.getBoundingClientRect().height}px`;
     group.add(c); frozenGroups.set(c, group);
   });
-  card.style.height = "";                                         // o card aberto cresce livremente
+  card.style.height = "";
   group.add(card); frozenGroups.set(card, group);
 });
 
-// "toggle" não propaga; por isso o listener usa a fase de captura
 el.results.addEventListener("toggle", (e) => {
   const details = e.target;
   if (!details.matches("details.more") || details.open) return;
@@ -409,7 +410,6 @@ document.addEventListener("keydown", (e) => {
   if (e.key === "/" && !["input", "select", "textarea"].includes(tag)) { e.preventDefault(); el.q.focus(); }
 });
 
-/* ---------- início ---------- */
 buildFacets();
 renderControls();
 runSearch(false);

@@ -9,7 +9,8 @@
   --accent: var(--gold);
   --accent-ink: #0f1515;
   --display: "Libre Caslon Text", "Baskerville", Georgia, "Times New Roman", serif;
-  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --serif: "Minion Pro", "Libre Caslon Text", "Georgia", "Times New Roman", serif;
+  --sans: var(--serif);
   color-scheme: dark;
 }
 
@@ -19,7 +20,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--sans);
+  font-family: var(--serif);
   font-size: 15px;
   line-height: 1.5;
 }
@@ -27,17 +28,23 @@ button, input, select { font: inherit; color: inherit; }
 button { cursor: pointer; }
 :focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
-.frame {
-  position: fixed;
-  inset: 10px;
-  border: 3px solid var(--gold);
-  border-radius: 28px;
+.page {
+  position: relative;
+  width: calc(100% - 32px);
+  max-width: 1440px;
+  margin: 16px auto 32px;
+}
+.page::before,
+.page::after {
+  content: "";
+  position: absolute;
   pointer-events: none;
   z-index: 30;
-  filter: url(#rough);
+  filter: url(#frameInk);
 }
+.page::before { inset: 0; border: 2px solid var(--gold); }
+.page::after { inset: 10px; border: 4px solid var(--gold); }
 
-/* ---------- Cabeçalho ---------- */
 .top {
   position: sticky;
   top: 0;
@@ -46,38 +53,21 @@ button { cursor: pointer; }
   border-bottom: 1px solid var(--line);
 }
 .top-inner {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 28px 40px 16px;
+  padding: 40px 50px 18px;
   display: flex;
   align-items: flex-end;
   gap: 28px;
   flex-wrap: wrap;
 }
-.brand { display: flex; flex-direction: column; gap: 6px; }
-.wordmark { display: flex; align-items: flex-end; gap: 14px; }
-.wordmark h1 {
+.brand { display: flex; flex-direction: column; gap: 8px; }
+
+.logo {
   margin: 0;
-  padding-bottom: 3px;
-  border-bottom: 3px solid var(--red);
-  font-family: var(--display);
-  font-style: italic;
-  font-weight: 700;
-  font-size: 36px;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
+  line-height: 0;
   color: var(--red);
-  filter: url(#ink);
+  --shine: var(--gold);
 }
-.wordmark .mark {
-  display: block;
-  width: 66px;
-  height: 24px;
-  padding-bottom: 3px;
-  border-bottom: 3px solid var(--red);
-  color: var(--red);
-  filter: url(#ink);
-}
+.logo svg { display: block; width: 300px; max-width: 100%; height: auto; overflow: visible; }
 .brand .tagline { font-size: 13px; color: var(--muted); }
 
 .search { flex: 1 1 320px; position: relative; }
@@ -87,7 +77,7 @@ button { cursor: pointer; }
   padding: 0 44px 0 14px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 2px;
 }
 .search input:focus { border-color: var(--gold); outline: none; box-shadow: 0 0 0 1px var(--gold); }
 .search input::placeholder { color: var(--muted); }
@@ -100,7 +90,7 @@ button { cursor: pointer; }
   font-size: 12px;
   color: var(--muted);
   border: 1px solid var(--line);
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 0 6px;
   pointer-events: none;
 }
@@ -114,22 +104,18 @@ button { cursor: pointer; }
   color: var(--gold);
 }
 
-/* ---------- Estrutura ---------- */
 .layout {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 24px 40px;
+  padding: 24px 50px;
   display: grid;
   grid-template-columns: 270px minmax(0, 1fr);
   gap: 32px;
   align-items: start;
 }
 
-/* ---------- Filtros ---------- */
 .filters {
   position: sticky;
-  top: 130px;
-  max-height: calc(100vh - 150px);
+  top: 170px;
+  max-height: calc(100vh - 190px);
   overflow-y: auto;
   padding-right: 8px;
   scrollbar-width: thin;
@@ -140,30 +126,43 @@ button { cursor: pointer; }
   padding: 0;
   margin-bottom: 10px;
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 700;
   font-size: 17px;
 }
-.filters .hint { font-family: var(--sans); font-style: normal; font-weight: 400; font-size: 13px; color: var(--muted); }
+.filters .hint { font-family: var(--sans); font-size: 13px; color: var(--muted); }
 
 .circles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
 .circ {
+  --nonagon: polygon(50.0% 1.5%, 82.1% 13.2%, 99.2% 42.8%, 93.3% 76.5%, 67.1% 98.5%, 32.9% 98.5%, 6.7% 76.5%, 0.8% 42.8%, 17.9% 13.2%);
+  position: relative;
+  isolation: isolate;
   aspect-ratio: 1;
-  border-radius: 50%;
-  border: 1px solid var(--line);
-  background: var(--surface);
+  padding: 0;
+  border: 0;
+  background: var(--line);
+  clip-path: var(--nonagon);
   font-weight: 500;
   font-size: 15px;
-  padding: 0;
-  transition: background-color .12s, color .12s, border-color .12s;
 }
-.circ:hover { border-color: var(--gold); }
+.circ::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--surface);
+  clip-path: var(--nonagon);
+  transition: background-color .12s;
+}
+.circ:hover { background: var(--gold); }
 .circ[aria-pressed="true"] {
   background: var(--gold);
-  border-color: var(--gold);
   color: var(--accent-ink);
   font-weight: 600;
 }
+.circ[aria-pressed="true"]::before { background: var(--gold); }
+
+.circ:focus-visible { outline: none; background: var(--ink); }
+.circ:focus-visible::before { inset: 3px; }
 .circ.empty:not([aria-pressed="true"]) { opacity: .35; }
 
 .opt {
@@ -174,14 +173,18 @@ button { cursor: pointer; }
   border-radius: 6px;
   cursor: pointer;
 }
+.opt input { accent-color: var(--gold); }
 .opt:hover { background: var(--surface); }
-.opt input { width: 16px; height: 16px; margin: 0; accent-color: var(--gold); }
 .opt .name { flex: 1; }
 .opt .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
-.opt.empty:not(.on) { opacity: .45; }
-.dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
-
-.switch-row { display: flex; flex-direction: column; gap: 2px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.losango {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+.switch-row { display: flex; flex-direction: column; gap: 4px; }
 
 .link-btn {
   background: none;
@@ -192,7 +195,6 @@ button { cursor: pointer; }
   text-underline-offset: 3px;
 }
 
-/* ---------- Resultados ---------- */
 .toolbar {
   display: flex;
   align-items: center;
@@ -209,7 +211,7 @@ button { cursor: pointer; }
   padding: 0 8px;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 2px;
   color: var(--ink);
 }
 
@@ -231,11 +233,10 @@ button { cursor: pointer; }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 18px;
 }
 
-/* ---------- Card: pergaminho minimalista (cor chapada, sem imagens) ---------- */
 .card {
   --school: var(--muted);
   --paper: #ece3cc;
@@ -245,17 +246,17 @@ button { cursor: pointer; }
   --p-red: #9c1d1d;
 
   position: relative;
-  min-height: 300px;       /* próximo de um quadrado; cresce se o conteúdo precisar */
+  min-height: 300px;
   padding: 20px 18px 20px 22px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   color: var(--p-ink);
   background: var(--paper);
-  border-top: 3px solid #b89d68;      /* alusão discreta às pontas do rolo */
+  border-top: 3px solid #b89d68;
   border-bottom: 3px solid #b89d68;
   border-radius: 2px;
-  box-shadow: inset 4px 0 0 var(--school);   /* fita da escola de magia */
+  box-shadow: inset 4px 0 0 var(--school);
 }
 .card :focus-visible { outline: 2px solid var(--p-ink); outline-offset: 2px; }
 
@@ -266,7 +267,7 @@ button { cursor: pointer; }
   gap: 8px;
   font-size: 13px;
 }
-.card-top .lvl { font-family: var(--display); font-style: italic; font-weight: 700; color: var(--p-red); font-size: 14px; }
+.card-top .lvl { font-family: var(--display); color: var(--p-red); font-size: 14px; }
 .tags { display: flex; gap: 6px; }
 .tag {
   border: 1px solid var(--p-line);
@@ -278,14 +279,11 @@ button { cursor: pointer; }
 .card h2 {
   margin: 0;
   font-family: var(--display);
-  font-style: italic;
-  font-weight: 700;
   font-size: 20px;
   line-height: 1.2;
   color: var(--p-ink);
 }
 
-/* Escola de magia à esquerda, classes ao lado (posição fixa em todos os cards) */
 .school-row {
   display: flex;
   justify-content: space-between;
@@ -293,7 +291,6 @@ button { cursor: pointer; }
   gap: 10px;
 }
 .school-line { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 500; flex: none; padding-top: 2px; }
-.card .dot { box-shadow: 0 0 0 1px rgba(40, 25, 10, .45); }
 .classes { display: flex; flex-wrap: wrap; gap: 3px; justify-content: flex-end; }
 .cls {
   border: 1px solid var(--p-line);
@@ -340,20 +337,16 @@ button { cursor: pointer; }
   display: block;
   color: var(--ink);
   font-family: var(--display);
-  font-style: italic;
   font-size: 19px;
   margin-bottom: 6px;
 }
 
 footer {
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 8px 40px 48px;
+  padding: 8px 50px 48px;
   color: var(--muted);
   font-size: 12.5px;
 }
 footer p { margin: 0 0 6px; max-width: 80ch; }
-
 
 details.more { margin-top: auto; padding-top: 4px; font-size: 13px; }
 details.more summary { cursor: pointer; color: var(--p-red); width: fit-content; text-decoration: underline; text-underline-offset: 3px; }
@@ -369,15 +362,16 @@ details.more .comp { margin: 8px 0 0; color: var(--p-muted); font-size: 12.5px; 
 .more-btn:hover { background: rgba(232, 188, 57, .12); }
 .results-busy { opacity: .6; transition: opacity .15s; }
 
-/* ---------- Mobile ---------- */
 @media (max-width: 899px) {
-  .frame { inset: 6px; border-radius: 20px; }
+  .page { width: calc(100% - 16px); margin: 8px auto 16px; }
+  .page::before { border-width: 1.5px; }
+  .page::after { inset: 7px; border-width: 3px; }
   .top { position: static; }
-  .top-inner { padding: 22px 22px 14px; gap: 12px; align-items: center; }
+  .top-inner { padding: 34px 28px 14px; gap: 12px; align-items: center; }
   .brand { flex-basis: 100%; }
   .search { flex: 1 1 0; min-width: 0; }
-  .layout { grid-template-columns: 1fr; gap: 14px; padding: 16px 22px; }
-  footer { padding: 8px 22px 40px; }
+  .layout { grid-template-columns: 1fr; gap: 14px; padding: 16px 28px; }
+  footer { padding: 8px 28px 44px; }
   .toggle-filters { display: inline-flex; align-items: center; }
   .filters {
     display: none;
@@ -391,7 +385,7 @@ details.more .comp { margin: 8px 0 0; color: var(--p-muted); font-size: 12.5px; 
   }
   .filters.open { display: block; }
   .circles { grid-template-columns: repeat(5, 48px); }
-  .wordmark h1 { font-size: 30px; }
+  .logo svg { width: 235px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; }

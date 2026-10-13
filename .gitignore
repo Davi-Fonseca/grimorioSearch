@@ -1,0 +1,12 @@
+.venv/
+__pycache__/
+.pytest_cache/
+
+.vscode/
+.DS_Store
+data/traducao/entrada-*.jsonl
+data/traducao/prompt.txt
+# Conteúdo do livro (protegido por direitos autorais): não publique
+*.pdf
+!data/exemplo-spells-pt.jsonl
+data/nomes_pt_en*.csv

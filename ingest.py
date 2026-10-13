@@ -2,10 +2,14 @@
 """Lê as magias do SRD 2024, normaliza e indexa no Elasticsearch.
 
 Uso:
-    python ingest.py --reset        # apaga e recria o índice
-    python ingest.py                # cria o índice se não existir
+    python ingest.py --reset                 # SRD 2024 em inglês: apaga e recria o índice
+    python ingest.py                         # cria o índice se não existir
+    python ingest.py --if-empty              # só indexa se o índice não existir ou estiver vazio
+    python ingest.py --lang pt --reset       # livro em português (data/spells-pt.jsonl)
+    python ingest.py --lang pt --reset --mapa data/nomes_pt_en.csv --somente-srd   # só o que está no SRD
 """
 import argparse
+import copy
 import json
 import os
 import re
@@ -73,6 +77,15 @@ INDEX_BODY = {
         },
     },
 }
+
+def index_body(lang: str = "en") -> dict:
+    """Mapeamento do índice. Para textos em português, usa o analisador 'portuguese'."""
+    body = copy.deepcopy(INDEX_BODY)
+    if lang == "pt":
+        for campo in ("name", "description", "higher_level"):
+            body["mappings"]["properties"][campo]["analyzer"] = "portuguese"
+    return body
+
 
 # ---------------------------------------------------------------
 # Tradução dos campos curtos (tempo, alcance, duração)
@@ -201,6 +214,8 @@ def build_doc(s: dict) -> dict:
         "summary": make_summary(description),
         "damage_type": damage,
         "labels_pt": " ".join(labels),
+        "lang": "en",
+        "source": "SRD 5.2",
     }
 
 
@@ -215,9 +230,29 @@ def build_docs(path: Path = DATA_FILE) -> list[dict]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     ap.add_argument("--reset", action="store_true", help="apaga e recria o índice")
+    ap.add_argument("--lang", choices=["en", "pt"], default="en",
+                    help="en: SRD 2024 em inglês (padrão); pt: livro em português (data/spells-pt.jsonl)")
+    ap.add_argument("--file", help="arquivo de entrada (só para --lang pt; padrão: data/spells-pt.jsonl)")
+    ap.add_argument("--if-empty", action="store_true",
+                    help="só indexa se o índice não existir ou estiver vazio (usado na subida do Docker)")
+    ap.add_argument("--mapa", help="CSV pt,en com os nomes das magias no SRD (só para --lang pt)")
+    ap.add_argument("--somente-srd", action="store_true",
+                    help="indexa só as magias do livro que existem no SRD (exige --mapa)")
     ap.add_argument("--es", default=ES_URL, help=f"URL do Elasticsearch (padrão: {ES_URL})")
-    ap.add_argument("--index", default=INDEX, help=f"nome do índice (padrão: {INDEX})")
+    ap.add_argument("--index", help=f"nome do índice (padrão: {INDEX}, ou {INDEX}-pt com --lang pt)")
     args = ap.parse_args()
+    if args.lang == "en" and (args.mapa or args.somente_srd):
+        print("--mapa e --somente-srd só valem com --lang pt.")
+        return 2
+    index = args.index or (INDEX if args.lang == "en" else f"{INDEX}-pt")
+
+    # Lê e valida os dados antes de mexer no Elasticsearch
+    if args.lang == "pt":
+        from spells_pt import PT_FILE, load_docs
+        docs = load_docs(Path(args.file) if args.file else PT_FILE,
+                         mapa=Path(args.mapa) if args.mapa else None, somente_srd=args.somente_srd)
+    else:
+        docs = build_docs()
 
     from elasticsearch import Elasticsearch, helpers
 
@@ -229,21 +264,28 @@ def main() -> int:
               f"Rode 'docker compose up -d' e aguarde alguns segundos.\nDetalhe: {exc}")
         return 1
 
-    if args.reset and es.indices.exists(index=args.index):
-        es.indices.delete(index=args.index)
-        print(f"Índice '{args.index}' apagado.")
-    if not es.indices.exists(index=args.index):
-        es.indices.create(index=args.index, **INDEX_BODY)
-        print(f"Índice '{args.index}' criado.")
-    else:
-        print(f"Índice '{args.index}' já existe; documentos serão atualizados (use --reset para recriar).")
+    if args.if_empty and not args.reset and es.indices.exists(index=index):
+        n = es.count(index=index)["count"]
+        if n > 0:
+            print(f"Índice '{index}' já tem {n} magias; nada a indexar.")
+            return 0
 
-    docs = build_docs()
-    actions = ({"_index": args.index, "_id": d["id"], "_source": d} for d in docs)
+    if args.reset and es.indices.exists(index=index):
+        es.indices.delete(index=index)
+        print(f"Índice '{index}' apagado.")
+    if not es.indices.exists(index=index):
+        es.indices.create(index=index, **index_body(args.lang))
+        print(f"Índice '{index}' criado.")
+    else:
+        print(f"Índice '{index}' já existe; documentos serão atualizados (use --reset para recriar).")
+
+    actions = ({"_index": index, "_id": d["id"], "_source": d} for d in docs)
     ok, errors = helpers.bulk(es, actions, raise_on_error=False)
-    es.indices.refresh(index=args.index)
+    es.indices.refresh(index=index)
     print(f"{ok} magias indexadas; {len(errors) if isinstance(errors, list) else errors} erros.")
-    print(f"Total no índice: {es.count(index=args.index)['count']}")
+    print(f"Total no índice: {es.count(index=index)['count']}")
+    if args.lang == "pt":
+        print(f"Para usar este índice, defina ES_INDEX={index} na API (veja o README).")
     return 0 if not errors else 2
 
 

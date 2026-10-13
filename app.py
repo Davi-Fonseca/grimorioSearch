@@ -33,7 +33,7 @@ class SearchParams:
     classes: list[str] = field(default_factory=list)
     concentration: bool = False
     ritual: bool = False
-    sort: str = "relevance"
+    sort: str = "level"
     limit: int = 48
     offset: int = 0
 
@@ -92,11 +92,10 @@ def build_search(p: SearchParams) -> dict:
     Cada faceta recalcula suas contagens aplicando todos os filtros, exceto o dela
     (facetas disjuntivas): marcar "Mago" continua mostrando quantas magias o Clérigo tem.
     """
-    sort_by = p.sort if (p.sort != "relevance" or p.q.strip()) else "name"
+    # Sem ordenação por relevância: o texto da busca só decide quais magias entram.
     sorts = {
-        "relevance": [{"_score": "desc"}, {"name.raw": "asc"}],
+        "level": [{"level": "asc"}, {"name.raw": "asc"}],   # círculo (truques primeiro) e, dentro dele, nome
         "name": [{"name.raw": "asc"}],
-        "level": [{"level": "asc"}, {"name.raw": "asc"}],
     }
     aggs = {
         # total de documentos do índice, ignorando consulta e filtros (vem na mesma requisição)
@@ -112,7 +111,7 @@ def build_search(p: SearchParams) -> dict:
     body = {
         "query": text_query(p.q),
         "aggs": aggs,
-        "sort": sorts[sort_by],
+        "sort": sorts[p.sort],
         "from_": p.offset,
         "size": p.limit,
         "track_total_hits": True,
@@ -157,7 +156,7 @@ def search(
     cls: list[str] = Query([], alias="class"),
     concentration: bool = False,
     ritual: bool = False,
-    sort: Literal["relevance", "name", "level"] = "relevance",
+    sort: Literal["level", "name"] = "level",
     limit: int = Query(48, ge=1, le=100),
     offset: int = Query(0, ge=0, le=1000),
     es: Elasticsearch = Depends(get_es),
