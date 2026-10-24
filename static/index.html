@@ -114,11 +114,12 @@
 <div id="info-pop" class="info-pop" role="tooltip" hidden></div>
 
 <footer id="footer">
-  <p>Magias do SRD 5.2 (edição 2024 de D&amp;D). Os textos das magias estão em inglês, e os filtros, rótulos, alcances e durações foram traduzidos e convertidos para o sistema métrico.</p>
-  <p>This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
+  <p>Magias em português. Fonte: SRD 5.2 (traduzido para o português).</p>
+  <p>This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, translated and adapted into Portuguese. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </footer>
 </div>
 
+<script src="search.js?v=1"></script>
 <script>
 const PAGE = 48;
 
@@ -173,7 +174,6 @@ const state = {
 };
 let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {} } };
 let status = "loading";
-let controller = null;
 let timer = null;
 
 const activeCount = () =>
@@ -184,40 +184,34 @@ const clearFilters = () => {
   state.concentration = false; state.ritual = false;
 };
 
-function queryString(offset) {
-  const p = new URLSearchParams();
-  if (state.q.trim()) p.set("q", state.q.trim());
-  state.levels.forEach((v) => p.append("level", v));
-  state.schools.forEach((v) => p.append("school", v));
-  state.classes.forEach((v) => p.append("class", v));
-  state.components.forEach((v) => p.append("component", v));
-  if (state.concentration) p.set("concentration", "true");
-  if (state.ritual) p.set("ritual", "true");
-  p.set("sort", state.sort);
-  p.set("limit", PAGE);
-  p.set("offset", offset);
-  return p.toString();
-}
+/* A busca roda aqui no navegador: spells.json é baixado uma vez e indexado (ver search.js). */
+const indexReady = fetch("spells.json", { cache: "no-cache" })
+  .then((res) => { if (!res.ok) throw new Error(`HTTP ${res.status}`); return res.json(); })
+  .then((docs) => GrimorioSearch.createIndex(docs));
 
 async function runSearch(append = false) {
-  if (controller) controller.abort();
-  controller = new AbortController();
-  const offset = append ? data.hits.length : 0;
-  el.results.classList.add("results-busy");
   try {
-    const res = await fetch(`/api/search?${queryString(offset)}`, { signal: controller.signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const json = await res.json();
+    const index = await indexReady;
+    const json = GrimorioSearch.search(index, {
+      q: state.q,
+      levels: [...state.levels],
+      schools: [...state.schools],
+      classes: [...state.classes],
+      components: [...state.components],
+      concentration: state.concentration,
+      ritual: state.ritual,
+      sort: state.sort,
+      limit: PAGE,
+      offset: append ? data.hits.length : 0
+    });
     data = {
       hits: append ? data.hits.concat(json.hits) : json.hits,
       total: json.total, totalAll: json.total_all, facets: json.facets
     };
     status = "ok";
   } catch (err) {
-    if (err.name === "AbortError") return;
     status = "error";
   }
-  el.results.classList.remove("results-busy");
   renderResults();
 }
 

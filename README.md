@@ -59,12 +59,37 @@ pip install -r requirements-dev.txt
 pytest
 ```
 
+## Publicar de graça no Cloudflare (site estático)
+
+A interface faz a busca e os filtros **no navegador**, a partir de `static/spells.json` e `static/search.js`.
+Não precisa de FastAPI nem de Elasticsearch para o site funcionar: basta servir a pasta `static/`.
+
+```bash
+# 1. Sempre que mudar data/spells-pt.jsonl, gere o arquivo de dados e confira a busca
+python build_static.py
+node --test tests/search.test.mjs        # opcional (precisa do Node.js)
+
+# 2. Teste localmente (qualquer servidor de arquivos serve)
+python -m http.server 8000 --directory static
+
+# 3. Publique (precisa de conta gratuita no Cloudflare)
+npx wrangler deploy                      # usa o wrangler.jsonc deste repositório
+```
+
+Também dá para conectar o repositório do GitHub pelo painel do Cloudflare (Workers & Pages) e apontar o
+diretório de saída para `static`, sem comando de build, já que `static/spells.json` vai no repositório.
+Arquivos estáticos não contam no limite diário de requisições do plano gratuito.
+
+O `docker compose up -d` continua servindo a mesma pasta, mas o Elasticsearch e a API (`app.py`) só são
+necessários se você quiser a versão com servidor; a interface atual não usa `/api/search`.
+
 ## O que tem em cada arquivo
 
 | Arquivo | Função |
 |---|---|
 | `data/5e-SRD-Spells-2024.json` | Magias do SRD 2024, em inglês (cópia do repositório 5e-bits/5e-database) |
 | `vocab.py` | Escolas, classes e tipos de dano em português |
+| `build_static.py`, `static/search.js`, `static/spells.json`, `wrangler.jsonc` | Site estático: gera os dados, busca no navegador e configuração do Cloudflare |
 | `ingest.py` | Normaliza os dados, cria o índice (mapeamento e analisadores) e indexa |
 | `Dockerfile` | Imagem da API, com as dependências instaladas uma vez |
 | `spells_pt.py` | Esquema, validação e adaptação das magias em português, e cruzamento com o SRD |
