@@ -42,8 +42,27 @@ button { cursor: pointer; }
   z-index: 30;
   filter: url(#frameInk);
 }
-.page::before { inset: 0; border: 2px solid var(--gold); }
-.page::after { inset: 10px; border: 4px solid var(--gold); }
+/* só as laterais e a base; as linhas do topo ficam em .frame-top (fixas ao rolar) */
+.page::before { inset: 0; border: 2px solid var(--gold); border-top: 0; }
+.page::after { inset: 10px; border: 4px solid var(--gold); border-top: 0; }
+
+.frame-top {
+  position: sticky;
+  top: 0;
+  height: 0;
+  z-index: 31;
+  pointer-events: none;
+}
+.frame-top::before { /* tampa o conteúdo que rola por baixo das linhas */
+  content: "";
+  position: absolute;
+  top: 0; left: 14px; right: 14px;
+  height: 14px;
+  background: var(--bg);
+}
+.frame-top i { position: absolute; display: block; height: 24px; filter: url(#frameInkH); }
+.frame-top i:nth-child(1) { top: 0; left: 0; right: 0; border-top: 2px solid var(--gold); }
+.frame-top i:nth-child(2) { top: 10px; left: 10px; right: 10px; border-top: 4px solid var(--gold); }
 
 .top {
   position: sticky;
@@ -177,13 +196,17 @@ button { cursor: pointer; }
 .opt:hover { background: var(--surface); }
 .opt .name { flex: 1; }
 .opt .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
-.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.dot { width: var(--marker, 9px); height: var(--marker, 9px); border-radius: 50%; flex: none; }
 .losango {
-  width: 7px;
-  height: 7px;
+  width: var(--marker, 9px);
+  height: var(--marker, 9px);
   flex: none;
+  background: var(--c, var(--muted));
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
 }
+/* nos filtros, o losango só ganha cor quando a opção está selecionada */
+.opt .losango { background: var(--muted); opacity: .4; transition: background-color .12s, opacity .12s; }
+.opt.on .losango { background: var(--c); opacity: 1; }
 .switch-row { display: flex; flex-direction: column; gap: 4px; }
 
 .link-btn {
@@ -268,7 +291,45 @@ button { cursor: pointer; }
   font-size: 13px;
 }
 .card-top .lvl { font-family: var(--display); color: var(--p-red); font-size: 14px; }
-.tags { display: flex; gap: 6px; }
+.tags { display: flex; align-items: center; gap: 6px; }
+.info {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border: 1px solid var(--p-muted);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--p-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+}
+.info:hover, .info[aria-expanded="true"] { background: var(--p-ink); border-color: var(--p-ink); color: var(--paper); }
+
+.conc-pop {
+  position: fixed;
+  z-index: 100;
+  width: min(360px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  padding: 14px 16px;
+  background: #f4ecd6;
+  color: #2b1d10;
+  border: 1px solid #b89d68;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.conc-pop[hidden] { display: none; }
+.conc-pop h3 { margin: 0 0 6px; font-family: var(--display); font-size: 16px; color: #9c1d1d; }
+.conc-pop p { margin: 0 0 8px; }
+.conc-pop p:last-child { margin-bottom: 0; }
 .tag {
   border: 1px solid var(--p-line);
   border-radius: 2px;
@@ -351,7 +412,6 @@ footer p { margin: 0 0 6px; max-width: 80ch; }
 details.more { margin-top: auto; padding-top: 4px; font-size: 13px; }
 details.more summary { cursor: pointer; color: var(--p-red); width: fit-content; text-decoration: underline; text-underline-offset: 3px; }
 details.more .full { white-space: pre-line; margin: 8px 0 0; color: var(--p-ink); }
-details.more .comp { margin: 8px 0 0; color: var(--p-muted); font-size: 12.5px; }
 .more-wrap { display: flex; justify-content: center; margin-top: 22px; }
 .more-wrap:empty { display: none; }
 .more-btn {
@@ -364,8 +424,11 @@ details.more .comp { margin: 8px 0 0; color: var(--p-muted); font-size: 12.5px; 
 
 @media (max-width: 899px) {
   .page { width: calc(100% - 16px); margin: 8px auto 16px; }
-  .page::before { border-width: 1.5px; }
-  .page::after { inset: 7px; border-width: 3px; }
+  .page::before { border-width: 1.5px; border-top-width: 0; }
+  .page::after { inset: 7px; border-width: 3px; border-top-width: 0; }
+  .frame-top::before { left: 10px; right: 10px; height: 10px; }
+  .frame-top i:nth-child(1) { border-top-width: 1.5px; }
+  .frame-top i:nth-child(2) { top: 7px; left: 7px; right: 7px; border-top-width: 3px; }
   .top { position: static; }
   .top-inner { padding: 34px 28px 14px; gap: 12px; align-items: center; }
   .brand { flex-basis: 100%; }

@@ -7,12 +7,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <filter id="frameInk" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
+  <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="3" result="c"/>
+  <feDisplacementMap in="SourceGraphic" in2="c" scale="5" xChannelSelector="R" yChannelSelector="G" result="w"/>
+  <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="8" result="m"/>
+  <feDisplacementMap in="w" in2="m" scale="2.4" xChannelSelector="G" yChannelSelector="B" result="r"/>
+  <feGaussianBlur in="r" stdDeviation="0.9" result="b"/>
+  <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -0.7" result="th"/>
+  <feGaussianBlur in="th" stdDeviation="0.45"/>
+  </filter>
+  <filter id="frameInkH" x="-1%" y="-150%" width="102%" height="400%" color-interpolation-filters="sRGB">
   <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="3" result="c"/>
   <feDisplacementMap in="SourceGraphic" in2="c" scale="5" xChannelSelector="R" yChannelSelector="G" result="w"/>
   <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="8" result="m"/>
@@ -33,6 +42,7 @@
 </svg>
 
 <div class="page">
+<div class="frame-top" aria-hidden="true"><i></i><i></i></div>
 <header class="top">
   <div class="top-inner">
     <div class="brand">
@@ -95,6 +105,15 @@
     <div id="more" class="more-wrap"></div>
   </section>
 </main>
+
+<div id="conc-pop" class="conc-pop" role="tooltip" hidden>
+  <h3>Concentração</h3>
+  <p>Algumas magias e outros efeitos exigem que a Concentração permaneça ativa, conforme especificado em suas descrições. Se o criador do efeito perder a Concentração, o efeito termina. Se o efeito tiver uma duração máxima, a descrição do efeito indica quanto tempo o criador pode se concentrar nele: até 1 minuto, 1 hora ou outra duração. O criador pode encerrar a Concentração a qualquer momento (nenhuma ação é necessária).</p>
+  <p>Os seguintes fatores interrompem a Concentração:</p>
+  <p><strong>Dano.</strong> Se você sofrer dano, deve ser bem-sucedido em uma salvaguarda de Constituição para manter a Concentração. A CD é 10 ou metade do dano sofrido (arredondado para baixo), o que for maior, até uma CD máxima de 30.</p>
+  <p><strong>Incapacitado ou Morto.</strong> Sua Concentração se encerra se tem a condição Incapacitado ou morrer.</p>
+  <p><strong>Outro Efeito de Concentração.</strong> Você perde a Concentração em um efeito quando começa a conjurar uma magia que exige Concentração ou ativa outro efeito que também requer Concentração.</p>
+</div>
 
 <footer id="footer">
   <p>Magias do SRD 5.2 (edição 2024 de D&amp;D). Os textos das magias estão em inglês, e os filtros, rótulos, alcances e durações foram traduzidos e convertidos para o sistema métrico.</p>
@@ -206,7 +225,7 @@ function buildFacets() {
   ).join("");
   el.schools.innerHTML = byPt(SCHOOLS).map((k) =>
     `<label class="opt" data-school="${k}"><input type="checkbox" value="${k}">
-       <span class="losango" style="background:${SCHOOLS[k].color}"></span>
+       <span class="losango" style="--c:${SCHOOLS[k].color}"></span>
        <span class="name">${SCHOOLS[k].pt}</span><span class="count"></span></label>`
   ).join("");
   el.classes.innerHTML = byPt(CLASSES).map((k) =>
@@ -274,16 +293,20 @@ function cardHtml(s) {
   ).join("");
   const school = SCHOOLS[s.school] || { pt: s.school, color: "var(--muted)" };
   const comps = (s.components || []).join(", ") + (s.material ? ` (${s.material})` : "");
+  const info = s.concentration
+    ? `<button type="button" class="info" aria-label="O que é Concentração?" aria-expanded="false" aria-controls="conc-pop">i</button>`
+    : "";
   return `<article class="card" style="--school:${school.color}">
-    <div class="card-top"><span class="lvl">${levelLabel(s.level)}</span><span class="tags">${tags}</span></div>
+    <div class="card-top"><span class="lvl">${levelLabel(s.level)}</span><span class="tags">${tags}${info}</span></div>
     <h2>${esc(s.name)}</h2>
     <div class="school-row">
-      <span class="school-line"><span class="losango" style="background:${school.color}"></span>${school.pt}</span>
+      <span class="school-line"><span class="losango" style="--c:${school.color};background:${school.color}"></span>${school.pt}</span>
       <span class="classes">${classes}</span>
     </div>
     <dl class="meta">
       <dt>Tempo</dt><dd>${esc(s.time_pt)}</dd>
       <dt>Alcance</dt><dd>${esc(s.range_pt)}</dd>
+      ${comps ? `<dt>Componentes</dt><dd>${esc(comps)}</dd>` : ""}
       <dt>Duração</dt><dd>${esc(s.duration_pt)}</dd>
     </dl>
     <p class="summary">${esc(s.summary)}</p>
@@ -291,13 +314,13 @@ function cardHtml(s) {
       <summary>${s.lang === "pt" ? "Descrição completa" : "Descrição completa (em inglês)"}</summary>
       <p class="full">${esc(s.description)}</p>
       ${s.higher_level ? `<p class="full"><strong>Em círculos superiores.</strong> ${esc(s.higher_level)}</p>` : ""}
-      ${comps ? `<p class="comp">Componentes: ${esc(comps)}</p>` : ""}
     </details>
   </article>`;
 }
 
 function renderResults() {
   renderControls();
+  hidePop();
 
   if (status === "error") {
     el.total.textContent = "";
@@ -360,43 +383,79 @@ el.results.addEventListener("click", (e) => {
   const b = e.target.closest(".cls"); if (!b) return;
   toggle(state.classes, b.dataset.class); changed();
 });
-const frozenGroups = new Map();
+/* Popover de Concentração: hover (mouse) ou clique/toque/teclado */
+const pop = $("#conc-pop");
+let popBtn = null, popPinned = false, popTimer = null;
 
-function releaseRow(group) {
-  group.forEach((c) => { c.style.height = ""; frozenGroups.delete(c); });
+function placePop() {
+  if (!popBtn) return;
+  const r = popBtn.getBoundingClientRect(), m = 8;
+  const w = pop.offsetWidth, h = pop.offsetHeight;
+  const left = Math.max(m, Math.min(r.right - w, innerWidth - w - m));
+  let top = r.bottom + 6;
+  if (top + h > innerHeight - m) top = Math.max(m, r.top - h - 6);
+  pop.style.left = `${left}px`; pop.style.top = `${top}px`;
+}
+function showPop(btn) {
+  clearTimeout(popTimer);
+  if (popBtn && popBtn !== btn) popBtn.setAttribute("aria-expanded", "false");
+  popBtn = btn; pop.hidden = false;
+  btn.setAttribute("aria-expanded", "true");
+  btn.setAttribute("aria-describedby", "conc-pop");
+  placePop();
+}
+function hidePop() {
+  clearTimeout(popTimer);
+  if (popBtn) popBtn.setAttribute("aria-expanded", "false");
+  popBtn = null; popPinned = false; pop.hidden = true;
+}
+const hidePopSoon = () => { if (!popPinned) popTimer = setTimeout(hidePop, 150); };
+
+el.results.addEventListener("pointerover", (e) => {
+  const b = e.target.closest(".info");
+  if (b && e.pointerType === "mouse" && !popPinned) showPop(b);
+});
+el.results.addEventListener("pointerout", (e) => {
+  if (e.target.closest(".info") && e.pointerType === "mouse") hidePopSoon();
+});
+pop.addEventListener("pointerenter", () => clearTimeout(popTimer));
+pop.addEventListener("pointerleave", hidePopSoon);
+el.results.addEventListener("click", (e) => {
+  const b = e.target.closest(".info"); if (!b) return;
+  if (popPinned && popBtn === b) return hidePop();
+  showPop(b); popPinned = true;
+});
+document.addEventListener("click", (e) => {
+  if (!popBtn || e.target.closest(".info") || e.target.closest("#conc-pop")) return;
+  hidePop();
+});
+document.addEventListener("keydown", (e) => { if (e.key === "Escape" && popBtn) { popBtn.focus(); hidePop(); } });
+window.addEventListener("scroll", placePop, { passive: true });
+window.addEventListener("resize", placePop);
+
+/* Alturas por linha: cards recolhidos de uma linha que tem algum card aberto
+   não acompanham o mais alto; ficam todos com a mesma altura natural. */
+const isOpen = (c) => c.querySelector("details.more").open;
+
+function syncRows() {
+  const cards = [...el.results.querySelectorAll(".card")];
+  cards.forEach((c) => { c.style.height = ""; c.style.alignSelf = ""; });
+  const cols = getComputedStyle(el.results).gridTemplateColumns.split(" ").length || 1;
+  for (let i = 0; i < cards.length; i += cols) {
+    const row = cards.slice(i, i + cols);
+    if (!row.some(isOpen)) continue;
+    const closed = row.filter((c) => !isOpen(c));
+    closed.forEach((c) => { c.style.alignSelf = "start"; });
+    const h = Math.max(0, ...closed.map((c) => c.offsetHeight));
+    closed.forEach((c) => { c.style.height = `${h}px`; });
+  }
 }
 
-el.results.addEventListener("click", (e) => {
-  const summary = e.target.closest("details.more > summary");
-  if (!summary) return;
-  const card = summary.closest(".card");
-  if (card.querySelector("details.more").open) return;
-  const top = card.getBoundingClientRect().top;
-  const row = [...el.results.querySelectorAll(".card")]
-    .filter((c) => Math.abs(c.getBoundingClientRect().top - top) < 2);
-  const group = frozenGroups.get(card) || new Set(row);
-  row.forEach((c) => {
-    if (c === card) return;
-    if (!c.style.height) c.style.height = `${c.getBoundingClientRect().height}px`;
-    group.add(c); frozenGroups.set(c, group);
-  });
-  card.style.height = "";
-  group.add(card); frozenGroups.set(card, group);
+/* MutationObserver roda antes da pintura, então não há "pulo" visual */
+new MutationObserver(syncRows).observe(el.results, {
+  subtree: true, attributes: true, attributeFilter: ["open"]
 });
-
-el.results.addEventListener("toggle", (e) => {
-  const details = e.target;
-  if (!details.matches("details.more") || details.open) return;
-  const card = details.closest(".card");
-  const group = frozenGroups.get(card);
-  if (!group) return;
-  const anyOpen = [...group].some((c) => c.isConnected && c.querySelector("details.more").open);
-  if (!anyOpen) releaseRow(group);
-}, true);
-
-window.addEventListener("resize", () => {
-  frozenGroups.forEach((group) => releaseRow(group));
-});
+window.addEventListener("resize", syncRows);
 
 el.more.addEventListener("click", (e) => { if (e.target.closest("#load-more")) runSearch(true); });
 
