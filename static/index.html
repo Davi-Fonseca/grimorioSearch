@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -65,18 +65,23 @@
 <main class="layout">
   <aside class="filters" id="filters" aria-label="Filtros">
     <fieldset>
-      <legend>Círculo <span class="hint">(T = truque)</span></legend>
+      <legend>Círculo <button type="button" class="info" data-info="levels" aria-label="Sobre o filtro Círculo" aria-expanded="false" aria-controls="info-pop">i</button></legend>
       <div class="circles" id="levels"></div>
     </fieldset>
 
     <fieldset>
-      <legend>Classe <span class="hint">(qualquer uma das marcadas)</span></legend>
+      <legend>Classe <button type="button" class="info" data-info="classes" aria-label="Sobre o filtro Classe" aria-expanded="false" aria-controls="info-pop">i</button></legend>
       <div id="classes"></div>
     </fieldset>
 
     <fieldset>
       <legend>Escola de magia</legend>
       <div id="schools"></div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Componentes <button type="button" class="info" data-info="components" aria-label="Sobre o filtro Componentes" aria-expanded="false" aria-controls="info-pop">i</button></legend>
+      <div id="components"></div>
     </fieldset>
 
     <fieldset>
@@ -106,14 +111,7 @@
   </section>
 </main>
 
-<div id="conc-pop" class="conc-pop" role="tooltip" hidden>
-  <h3>Concentração</h3>
-  <p>Algumas magias e outros efeitos exigem que a Concentração permaneça ativa, conforme especificado em suas descrições. Se o criador do efeito perder a Concentração, o efeito termina. Se o efeito tiver uma duração máxima, a descrição do efeito indica quanto tempo o criador pode se concentrar nele: até 1 minuto, 1 hora ou outra duração. O criador pode encerrar a Concentração a qualquer momento (nenhuma ação é necessária).</p>
-  <p>Os seguintes fatores interrompem a Concentração:</p>
-  <p><strong>Dano.</strong> Se você sofrer dano, deve ser bem-sucedido em uma salvaguarda de Constituição para manter a Concentração. A CD é 10 ou metade do dano sofrido (arredondado para baixo), o que for maior, até uma CD máxima de 30.</p>
-  <p><strong>Incapacitado ou Morto.</strong> Sua Concentração se encerra se tem a condição Incapacitado ou morrer.</p>
-  <p><strong>Outro Efeito de Concentração.</strong> Você perde a Concentração em um efeito quando começa a conjurar uma magia que exige Concentração ou ativa outro efeito que também requer Concentração.</p>
-</div>
+<div id="info-pop" class="info-pop" role="tooltip" hidden></div>
 
 <footer id="footer">
   <p>Magias do SRD 5.2 (edição 2024 de D&amp;D). Os textos das magias estão em inglês, e os filtros, rótulos, alcances e durações foram traduzidos e convertidos para o sistema métrico.</p>
@@ -138,6 +136,30 @@ const CLASSES = {
   Bard: "Bardo", Cleric: "Clérigo", Druid: "Druida", Paladin: "Paladino",
   Ranger: "Guardião", Sorcerer: "Feiticeiro", Warlock: "Bruxo", Wizard: "Mago"
 };
+const INFO = {
+  conc: {
+    title: "Concentração",
+    html: `<p>Algumas magias e outros efeitos exigem que a Concentração permaneça ativa, conforme especificado em suas descrições. Se o criador do efeito perder a Concentração, o efeito termina. Se o efeito tiver uma duração máxima, a descrição do efeito indica quanto tempo o criador pode se concentrar nele: até 1 minuto, 1 hora ou outra duração. O criador pode encerrar a Concentração a qualquer momento (nenhuma ação é necessária).</p>
+      <p>Os seguintes fatores interrompem a Concentração:</p>
+      <p><strong>Dano.</strong> Se você sofrer dano, deve ser bem-sucedido em uma salvaguarda de Constituição para manter a Concentração. A CD é 10 ou metade do dano sofrido (arredondado para baixo), o que for maior, até uma CD máxima de 30.</p>
+      <p><strong>Incapacitado ou Morto.</strong> Sua Concentração se encerra se tem a condição Incapacitado ou morrer.</p>
+      <p><strong>Outro Efeito de Concentração.</strong> Você perde a Concentração em um efeito quando começa a conjurar uma magia que exige Concentração ou ativa outro efeito que também requer Concentração.</p>`
+  },
+  levels: {
+    title: "Círculo",
+    html: `<p><strong>T</strong> = truque (círculo 0). Os números de 1 a 9 são os círculos das magias. Você pode marcar vários.</p>`
+  },
+  classes: {
+    title: "Classe",
+    html: `<p>Mostra as magias de qualquer uma das classes marcadas.</p>`
+  },
+  components: {
+    title: "Componentes",
+    html: `<p>Mostra só as magias que exigem todos os componentes marcados.</p>
+      <p><strong>V</strong> = verbal, <strong>S</strong> = somático, <strong>M</strong> = material.</p>`
+  }
+};
+const COMPONENTS = { V: "Verbal (V)", S: "Somático (S)", M: "Material (M)" };
 const byPt = (map) => Object.keys(map).sort((a, b) => {
   const x = map[a].pt || map[a], y = map[b].pt || map[b];
   return x.localeCompare(y, "pt-BR");
@@ -146,7 +168,7 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "
 const levelLabel = (l) => (l === 0 ? "Truque" : `${l}º círculo`);
 
 const state = {
-  q: "", levels: new Set(), schools: new Set(), classes: new Set(),
+  q: "", levels: new Set(), schools: new Set(), classes: new Set(), components: new Set(),
   concentration: false, ritual: false, sort: "level"
 };
 let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {} } };
@@ -155,10 +177,10 @@ let controller = null;
 let timer = null;
 
 const activeCount = () =>
-  state.levels.size + state.schools.size + state.classes.size + (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0);
+  state.levels.size + state.schools.size + state.classes.size + state.components.size + (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0);
 const toggle = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
 const clearFilters = () => {
-  state.levels.clear(); state.schools.clear(); state.classes.clear();
+  state.levels.clear(); state.schools.clear(); state.classes.clear(); state.components.clear();
   state.concentration = false; state.ritual = false;
 };
 
@@ -168,6 +190,7 @@ function queryString(offset) {
   state.levels.forEach((v) => p.append("level", v));
   state.schools.forEach((v) => p.append("school", v));
   state.classes.forEach((v) => p.append("class", v));
+  state.components.forEach((v) => p.append("component", v));
   if (state.concentration) p.set("concentration", "true");
   if (state.ritual) p.set("ritual", "true");
   p.set("sort", state.sort);
@@ -206,7 +229,7 @@ function changed(delay = 0) {
 
 const $ = (sel) => document.querySelector(sel);
 const el = {
-  q: $("#q"), levels: $("#levels"), schools: $("#schools"), classes: $("#classes"),
+  q: $("#q"), levels: $("#levels"), schools: $("#schools"), classes: $("#classes"), components: $("#components"),
   conc: $("#f-conc"), ritual: $("#f-ritual"), total: $("#total"), sort: $("#sort"),
   chips: $("#chips"), results: $("#results"), more: $("#more"),
   filters: $("#filters"), toggle: $("#toggle-filters"), footer: $("#footer")
@@ -224,13 +247,20 @@ function buildFacets() {
     `<button type="button" class="circ" data-level="${l}" aria-pressed="false" aria-label="${levelLabel(l)}">${l === 0 ? "T" : l}</button>`
   ).join("");
   el.schools.innerHTML = byPt(SCHOOLS).map((k) =>
-    `<label class="opt" data-school="${k}"><input type="checkbox" value="${k}">
-       <span class="losango" style="--c:${SCHOOLS[k].color}"></span>
+    `<label class="opt" data-school="${k}"><input class="sr" type="checkbox" value="${k}">
+       <span class="losango box" style="--c:${SCHOOLS[k].color}"></span>
        <span class="name">${SCHOOLS[k].pt}</span><span class="count"></span></label>`
   ).join("");
   el.classes.innerHTML = byPt(CLASSES).map((k) =>
     `<label class="opt" data-class="${k}"><input type="checkbox" value="${k}">
        <span class="name">${CLASSES[k]}</span><span class="count"></span></label>`
+  ).join("");
+}
+
+function buildComponents() {
+  el.components.innerHTML = Object.keys(COMPONENTS).map((k) =>
+    `<label class="opt" data-component="${k}"><input type="checkbox" value="${k}">
+       <span class="name">${COMPONENTS[k]}</span><span class="count"></span></label>`
   ).join("");
 }
 
@@ -249,6 +279,10 @@ function renderControls() {
     const on = state.classes.has(o.dataset.class);
     o.querySelector("input").checked = on; o.classList.toggle("on", on);
   });
+  el.components.querySelectorAll(".opt").forEach((o) => {
+    const on = state.components.has(o.dataset.component);
+    o.querySelector("input").checked = on; o.classList.toggle("on", on);
+  });
   el.conc.checked = state.concentration;
   el.ritual.checked = state.ritual;
   $("#opt-conc").classList.toggle("on", state.concentration);
@@ -258,6 +292,7 @@ function renderControls() {
   [...state.levels].sort((a, b) => a - b).forEach((l) => chips.push(chipHtml("levels", l, levelLabel(l))));
   [...state.schools].forEach((k) => chips.push(chipHtml("schools", k, SCHOOLS[k].pt)));
   [...state.classes].forEach((k) => chips.push(chipHtml("classes", k, CLASSES[k])));
+  [...state.components].forEach((k) => chips.push(chipHtml("components", k, COMPONENTS[k])));
   if (state.concentration) chips.push(chipHtml("concentration", "", "Concentração"));
   if (state.ritual) chips.push(chipHtml("ritual", "", "Ritual"));
   el.chips.innerHTML = chips.join("");
@@ -283,6 +318,21 @@ function renderFacetCounts() {
     o.classList.toggle("empty", !n);
     o.querySelector(".count").textContent = n;
   });
+  el.components.querySelectorAll(".opt").forEach((o) => {
+    const n = (f.components || {})[o.dataset.component] || 0;
+    o.classList.toggle("empty", !n);
+    o.querySelector(".count").textContent = n;
+  });
+}
+
+/* 1 quadrado = 1,5 m (5 pés). Só para alcances em metros; km, "Toque", "Pessoal" etc. ficam como estão. */
+function rangeHtml(r) {
+  const base = esc(r);
+  const m = /^\s*(\d+(?:[.,]\d+)?)\s*m\s*$/i.exec(r || "");
+  if (!m) return base;
+  const sq = Math.round(parseFloat(m[1].replace(",", ".")) / 1.5);
+  if (sq < 1) return base;
+  return `${base} <span class="sep">/</span> ${sq} ${sq === 1 ? "quadrado" : "quadrados"}`;
 }
 
 function cardHtml(s) {
@@ -294,7 +344,7 @@ function cardHtml(s) {
   const school = SCHOOLS[s.school] || { pt: s.school, color: "var(--muted)" };
   const comps = (s.components || []).join(", ") + (s.material ? ` (${s.material})` : "");
   const info = s.concentration
-    ? `<button type="button" class="info" aria-label="O que é Concentração?" aria-expanded="false" aria-controls="conc-pop">i</button>`
+    ? `<button type="button" class="info" data-info="conc" aria-label="O que é Concentração?" aria-expanded="false" aria-controls="info-pop">i</button>`
     : "";
   return `<article class="card" style="--school:${school.color}">
     <div class="card-top"><span class="lvl">${levelLabel(s.level)}</span><span class="tags">${tags}${info}</span></div>
@@ -305,7 +355,7 @@ function cardHtml(s) {
     </div>
     <dl class="meta">
       <dt>Tempo</dt><dd>${esc(s.time_pt)}</dd>
-      <dt>Alcance</dt><dd>${esc(s.range_pt)}</dd>
+      <dt>Alcance</dt><dd>${rangeHtml(s.range_pt)}</dd>
       ${comps ? `<dt>Componentes</dt><dd>${esc(comps)}</dd>` : ""}
       <dt>Duração</dt><dd>${esc(s.duration_pt)}</dd>
     </dl>
@@ -362,6 +412,7 @@ el.levels.addEventListener("click", (e) => {
 });
 el.schools.addEventListener("change", (e) => { toggle(state.schools, e.target.value); changed(); });
 el.classes.addEventListener("change", (e) => { toggle(state.classes, e.target.value); changed(); });
+el.components.addEventListener("change", (e) => { toggle(state.components, e.target.value); changed(); });
 el.conc.addEventListener("change", () => { state.concentration = el.conc.checked; changed(); });
 el.ritual.addEventListener("change", () => { state.ritual = el.ritual.checked; changed(); });
 $("#clear-side").addEventListener("click", () => { clearFilters(); changed(); });
@@ -372,6 +423,7 @@ el.chips.addEventListener("click", (e) => {
   if (kind === "levels") state.levels.delete(Number(value));
   else if (kind === "schools") state.schools.delete(value);
   else if (kind === "classes") state.classes.delete(value);
+  else if (kind === "components") state.components.delete(value);
   else if (kind === "concentration") state.concentration = false;
   else if (kind === "ritual") state.ritual = false;
   changed();
@@ -384,14 +436,16 @@ el.results.addEventListener("click", (e) => {
   toggle(state.classes, b.dataset.class); changed();
 });
 /* Popover de Concentração: hover (mouse) ou clique/toque/teclado */
-const pop = $("#conc-pop");
+const pop = $("#info-pop");
 let popBtn = null, popPinned = false, popTimer = null;
 
 function placePop() {
   if (!popBtn) return;
   const r = popBtn.getBoundingClientRect(), m = 8;
   const w = pop.offsetWidth, h = pop.offsetHeight;
-  const left = Math.max(m, Math.min(r.right - w, innerWidth - w - m));
+  let left = r.left;                                   // alinha à esquerda do ícone…
+  if (left + w > innerWidth - m) left = r.right - w;   // …ou à direita, se não couber
+  left = Math.max(m, Math.min(left, innerWidth - w - m));
   let top = r.bottom + 6;
   if (top + h > innerHeight - m) top = Math.max(m, r.top - h - 6);
   pop.style.left = `${left}px`; pop.style.top = `${top}px`;
@@ -399,9 +453,11 @@ function placePop() {
 function showPop(btn) {
   clearTimeout(popTimer);
   if (popBtn && popBtn !== btn) popBtn.setAttribute("aria-expanded", "false");
+  const info = INFO[btn.dataset.info];
+  pop.innerHTML = `<h3>${info.title}</h3>${info.html}`;
   popBtn = btn; pop.hidden = false;
   btn.setAttribute("aria-expanded", "true");
-  btn.setAttribute("aria-describedby", "conc-pop");
+  btn.setAttribute("aria-describedby", "info-pop");
   placePop();
 }
 function hidePop() {
@@ -411,30 +467,30 @@ function hidePop() {
 }
 const hidePopSoon = () => { if (!popPinned) popTimer = setTimeout(hidePop, 150); };
 
-el.results.addEventListener("pointerover", (e) => {
+document.addEventListener("pointerover", (e) => {
   const b = e.target.closest(".info");
   if (b && e.pointerType === "mouse" && !popPinned) showPop(b);
 });
-el.results.addEventListener("pointerout", (e) => {
+document.addEventListener("pointerout", (e) => {
   if (e.target.closest(".info") && e.pointerType === "mouse") hidePopSoon();
 });
 pop.addEventListener("pointerenter", () => clearTimeout(popTimer));
 pop.addEventListener("pointerleave", hidePopSoon);
-el.results.addEventListener("click", (e) => {
-  const b = e.target.closest(".info"); if (!b) return;
-  if (popPinned && popBtn === b) return hidePop();
-  showPop(b); popPinned = true;
-});
 document.addEventListener("click", (e) => {
-  if (!popBtn || e.target.closest(".info") || e.target.closest("#conc-pop")) return;
-  hidePop();
+  const b = e.target.closest(".info");
+  if (b) {
+    if (popPinned && popBtn === b) return hidePop();
+    showPop(b); popPinned = true; return;
+  }
+  if (popBtn && !e.target.closest("#info-pop")) hidePop();
 });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && popBtn) { popBtn.focus(); hidePop(); } });
 window.addEventListener("scroll", placePop, { passive: true });
 window.addEventListener("resize", placePop);
 
-/* Alturas por linha: cards recolhidos de uma linha que tem algum card aberto
-   não acompanham o mais alto; ficam todos com a mesma altura natural. */
+/* Alturas por linha: numa linha com algum card aberto, nenhum card é esticado
+   até a altura do maior. Cada um fica com a própria altura (o maior continua
+   empurrando a linha seguinte) e os recolhidos mantêm todos a mesma altura. */
 const isOpen = (c) => c.querySelector("details.more").open;
 
 function syncRows() {
@@ -444,8 +500,8 @@ function syncRows() {
   for (let i = 0; i < cards.length; i += cols) {
     const row = cards.slice(i, i + cols);
     if (!row.some(isOpen)) continue;
+    row.forEach((c) => { c.style.alignSelf = "start"; });
     const closed = row.filter((c) => !isOpen(c));
-    closed.forEach((c) => { c.style.alignSelf = "start"; });
     const h = Math.max(0, ...closed.map((c) => c.offsetHeight));
     closed.forEach((c) => { c.style.height = `${h}px`; });
   }
@@ -470,6 +526,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 buildFacets();
+buildComponents();
 renderControls();
 runSearch(false);
 </script>

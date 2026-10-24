@@ -6,7 +6,7 @@ import pytest
 import ingest
 import spells_pt as sp
 
-EXEMPLO = Path(__file__).parent.parent / "data" / "exemplo-spells-pt.jsonl"
+EXEMPLO = Path(__file__).parent.parent / "data" / "Exemplo-spells-pt.jsonl"
 
 
 def base(**over):

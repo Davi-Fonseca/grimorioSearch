@@ -49,6 +49,23 @@ def test_facetas_disjuntivas_ignoram_o_proprio_filtro():
     assert all({"term": {"ritual": True}} in v for v in por_faceta.values())
 
 
+def test_filtro_de_componentes_exige_todos_os_marcados():
+    f = filter_clauses(SearchParams(components=["V", "M"]))
+    assert {"term": {"components": "V"}} in f and {"term": {"components": "M"}} in f
+    # a faceta de componentes ignora o próprio filtro, mas respeita os demais
+    b = build_search(SearchParams(components=["V"], ritual=True))
+    c = b["aggs"]["components"]["filter"]["bool"]["filter"]
+    assert {"term": {"components": "V"}} not in c and {"term": {"ritual": True}} in c
+
+
+def test_endpoint_valida_componentes(client):
+    c, fake = client
+    assert c.get("/api/search", params=[("component", "S"), ("component", "X"), ("component", "V")]).status_code == 200
+    f = fake.calls[0][1]["post_filter"]["bool"]["filter"]
+    assert {"term": {"components": "V"}} in f and {"term": {"components": "S"}} in f
+    assert {"term": {"components": "X"}} not in f
+
+
 def test_ordenar_por_nome():
     b = build_search(SearchParams(sort="name"))
     assert b["sort"] == [{"name.raw": "asc"}]
@@ -68,6 +85,7 @@ ES_RESP = {
         "levels": {"values": {"buckets": [{"key": 0, "doc_count": 1}, {"key": 3, "doc_count": 1}]}},
         "schools": {"values": {"buckets": [{"key": "Evocation", "doc_count": 2}]}},
         "classes": {"values": {"buckets": [{"key": "Wizard", "doc_count": 2}]}},
+        "components": {"values": {"buckets": [{"key": "V", "doc_count": 2}, {"key": "S", "doc_count": 2}]}},
     },
 }
 
@@ -78,6 +96,7 @@ def test_shape_response():
     assert [h["id"] for h in out["hits"]] == ["fireball", "fire-bolt"]
     assert out["facets"]["levels"] == {"0": 1, "3": 1}
     assert out["facets"]["schools"] == {"Evocation": 2}
+    assert out["facets"]["components"] == {"V": 2, "S": 2}
 
 
 # ---------- endpoint com Elasticsearch falso ----------

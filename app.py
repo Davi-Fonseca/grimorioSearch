@@ -22,7 +22,9 @@ STATIC_DIR = BASE / "static"
 
 
 # nome da faceta na API -> campo no índice
-FACETS = {"levels": "level", "schools": "school", "classes": "classes"}
+FACETS = {"levels": "level", "schools": "school", "classes": "classes", "components": "components"}
+
+COMPONENTS = ("V", "S", "M")   # verbal, somático, material
 
 
 @dataclass
@@ -31,6 +33,7 @@ class SearchParams:
     levels: list[int] = field(default_factory=list)
     schools: list[str] = field(default_factory=list)
     classes: list[str] = field(default_factory=list)
+    components: list[str] = field(default_factory=list)
     concentration: bool = False
     ritual: bool = False
     sort: str = "level"
@@ -78,6 +81,9 @@ def filter_clauses(p: SearchParams, skip: str | None = None) -> list[dict]:
         clauses.append({"terms": {"school": p.schools}})
     if skip != "classes" and p.classes:
         clauses.append({"terms": {"classes": p.classes}})
+    if skip != "components":
+        # a magia precisa ter TODOS os componentes marcados
+        clauses.extend({"term": {"components": c}} for c in p.components)
     if p.concentration:
         clauses.append({"term": {"concentration": True}})
     if p.ritual:
@@ -154,6 +160,7 @@ def search(
     level: list[int] = Query([]),
     school: list[str] = Query([]),
     cls: list[str] = Query([], alias="class"),
+    component: list[str] = Query([]),
     concentration: bool = False,
     ritual: bool = False,
     sort: Literal["level", "name"] = "level",
@@ -166,6 +173,7 @@ def search(
         levels=sorted({l for l in level if 0 <= l <= 9}),
         schools=[s for s in dict.fromkeys(school) if s in SCHOOLS_PT],
         classes=[c for c in dict.fromkeys(cls) if c in CLASSES_PT],
+        components=[c for c in COMPONENTS if c in component],
         concentration=concentration,
         ritual=ritual,
         sort=sort,
