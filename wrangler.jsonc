@@ -1,6 +1,6 @@
 {
   // Site 100% estático: o Cloudflare serve a pasta static/ (sem servidor, sem Elasticsearch).
-  "name": "grimorio",
+  "name": "grimoriosearch",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./static"
