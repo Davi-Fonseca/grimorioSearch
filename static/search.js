@@ -6,7 +6,7 @@
  *     ("fir" -> "Fireball") ou que tem alguma palavra parecida (com tolerância a erros de digitação)
  *     no nome, na descrição, em "círculos superiores" ou nos rótulos (escola, classe, círculo…);
  *   - filtros: círculo/escola/classe (qualquer um dos marcados), componentes (todos os marcados),
- *     concentração e ritual;
+ *     concentração e ritual; cada filtro pode virar "reverso" (p.exclude): o que está marcado some;
  *   - facetas disjuntivas: a contagem de cada filtro ignora o próprio filtro.
  */
 (function (root) {
@@ -120,18 +120,28 @@
     return out;
   }
 
-  const passes = (d, p, skip) =>
-    (skip === "levels" || !p.levels.length || p.levels.includes(d.level)) &&
-    (skip === "schools" || !p.schools.length || p.schools.includes(d.school)) &&
-    (skip === "classes" || !p.classes.length || d.classes.some((c) => p.classes.includes(c))) &&
-    (skip === "components" || !p.components.length || p.components.every((c) => (d.components || []).includes(c))) &&
-    (!p.concentration || d.concentration) &&
-    (!p.ritual || d.ritual);
+  // Filtragem reversa (p.exclude): no filtro marcado como reverso, o que foi selecionado NÃO aparece.
+  // Círculo, escola e classe: some quem tiver qualquer um dos marcados.
+  // Componentes: some quem exigir qualquer um dos marcados.
+  // Características: some quem tiver concentração/ritual (conforme o que estiver marcado).
+  const passes = (d, p, skip) => {
+    const neg = (k) => p.exclude.includes(k);
+    const comps = d.components || [];
+    return (
+      (skip === "levels" || !p.levels.length || p.levels.includes(d.level) !== neg("levels")) &&
+      (skip === "schools" || !p.schools.length || p.schools.includes(d.school) !== neg("schools")) &&
+      (skip === "classes" || !p.classes.length || d.classes.some((c) => p.classes.includes(c)) !== neg("classes")) &&
+      (skip === "components" || !p.components.length ||
+        (neg("components") ? !p.components.some((c) => comps.includes(c)) : p.components.every((c) => comps.includes(c)))) &&
+      (!p.concentration || Boolean(d.concentration) !== neg("features")) &&
+      (!p.ritual || Boolean(d.ritual) !== neg("features"))
+    );
+  };
 
   function search(index, params) {
     const p = Object.assign(
       { q: "", levels: [], schools: [], classes: [], components: [], concentration: false,
-        ritual: false, sort: "level", limit: 48, offset: 0 },
+        ritual: false, exclude: [], sort: "level", limit: 48, offset: 0 },
       params
     );
     p.levels = [...p.levels].map(Number);
@@ -158,7 +168,13 @@
 
     const key = (d) => fold(d.name);
     const byName = (a, b) => (key(a) < key(b) ? -1 : key(a) > key(b) ? 1 : 0);
-    hits.sort(p.sort === "name" ? byName : (a, b) => a.level - b.level || byName(a, b));
+    const orders = {
+      level: (a, b) => a.level - b.level || byName(a, b),       // círculo crescente
+      level_desc: (a, b) => b.level - a.level || byName(a, b),  // círculo decrescente
+      name: byName,                                             // A–Z
+      name_desc: (a, b) => byName(b, a),                        // Z–A
+    };
+    hits.sort(orders[p.sort] || orders.level);
 
     return {
       total: hits.length,

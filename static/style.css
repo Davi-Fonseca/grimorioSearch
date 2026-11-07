@@ -8,6 +8,8 @@
   --line: #2b3836;
   --accent: var(--gold);
   --accent-ink: #0f1515;
+  --head-h: 116px; /* altura do cabeçalho completo (logo + busca) */
+  --bar-h: 72px;   /* altura que sobra fixa no topo ao rolar (só a busca) */
   --display: "Libre Caslon Text", "Baskerville", Georgia, "Times New Roman", serif;
   --serif: "Minion Pro", "Libre Caslon Text", "Georgia", "Times New Roman", serif;
   --sans: var(--serif);
@@ -30,58 +32,25 @@ button { cursor: pointer; }
 
 .page {
   position: relative;
-  width: calc(100% - 32px);
+  width: 100%;
   max-width: 1440px;
-  margin: 16px auto 32px;
+  margin: 0 auto;
 }
-.page::before,
-.page::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  z-index: 30;
-  filter: url(#frameInk);
-}
-/* só as laterais e a base; as linhas do topo ficam em .frame-top (fixas ao rolar) */
-.page::before { inset: 0; border: 2px solid var(--gold); border-top: 0; }
-.page::after { inset: 10px; border: 4px solid var(--gold); border-top: 0; }
-
-.frame-top {
-  position: sticky;
-  top: 0;
-  height: 0;
-  z-index: 31;
-  pointer-events: none;
-}
-.frame-top::before { /* esconde o trecho das laterais que sobe acima das linhas do topo */
-  content: "";
-  position: absolute;
-  top: 0; left: 6px; right: 6px;
-  height: 12px;
-  background: var(--bg);
-  z-index: -1;
-}
-.frame-top::after { /* tampa o conteúdo que rola por baixo das linhas */
-  content: "";
-  position: absolute;
-  top: 0; left: 14px; right: 14px;
-  height: 14px;
-  background: var(--bg);
-  z-index: -1;
-}
-.frame-top i { position: absolute; display: block; height: 24px; filter: url(#frameInkH); }
-.frame-top i:nth-child(1) { top: 0; left: 0; right: 0; border-top: 2px solid var(--gold); }
-.frame-top i:nth-child(2) { top: 10px; left: 10px; right: 10px; border-top: 4px solid var(--gold); }
 
 .top {
   position: sticky;
-  top: 0;
+  top: calc(var(--bar-h) - var(--head-h)); /* sobe o cabeçalho até sobrar só a barra de busca */
+  height: var(--head-h);
   z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;       /* a barra de busca fica sempre na base do cabeçalho */
   background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
+.top.stuck .brand { display: none; }  /* com o logo fora da tela, a busca ocupa a largura toda */
 .top-inner {
-  padding: 40px 50px 18px;
+  padding: 22px 32px 14px;
   display: flex;
   align-items: flex-end;
   gap: 28px;
@@ -133,7 +102,7 @@ button { cursor: pointer; }
 }
 
 .layout {
-  padding: 24px 50px;
+  padding: 24px 32px;
   display: grid;
   grid-template-columns: 270px minmax(0, 1fr);
   gap: 32px;
@@ -142,20 +111,59 @@ button { cursor: pointer; }
 
 .filters {
   position: sticky;
-  top: 170px;
-  max-height: calc(100vh - 190px);
+  top: calc(var(--bar-h) + 22px);
+  max-height: calc(100vh - var(--bar-h) - 44px);
   overflow-y: auto;
   padding-right: 8px;
   scrollbar-width: thin;
-  scrollbar-color: var(--line) transparent;
+  scrollbar-color: #5b6a66 transparent;
 }
-.filters fieldset { border: 0; margin: 0 0 24px; padding: 0; min-width: 0; }
-.filters legend {
+@supports selector(::-webkit-scrollbar) {
+  .filters { scrollbar-width: auto; scrollbar-color: auto; }
+  .filters::-webkit-scrollbar { width: 8px; }
+  .filters::-webkit-scrollbar-track { background: var(--surface); border-radius: 4px; }
+  .filters::-webkit-scrollbar-thumb { background: #5b6a66; border-radius: 4px; }
+  .filters::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+  .filters::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+}
+.filters .fs { margin: 0 0 24px; padding: 0; min-width: 0; }
+.fs-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; min-height: 28px; }
+.fs-title { margin: 0; padding: 0; font-family: var(--display); font-size: 17px; font-weight: 400; }
+.fs-tools { margin-left: auto; display: flex; gap: 6px; }
+
+/* botões de cada filtro: filtragem reversa e limpar */
+.tool {
+  width: 28px;
+  height: 28px;
   padding: 0;
-  margin-bottom: 10px;
-  font-family: var(--display);
-  font-size: 17px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  transition: color .12s, border-color .12s, background-color .12s;
 }
+.tool:hover { color: var(--gold); border-color: var(--gold); }
+.tool:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+.tool[aria-pressed="true"] { color: var(--red); border-color: var(--red); background: rgba(255, 34, 34, .14); }
+.tool.idle { opacity: .45; }
+.tool.idle:hover { opacity: 1; }
+
+.tip {
+  position: fixed;
+  z-index: 120;
+  padding: 5px 10px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .5);
+}
+.tip[hidden] { display: none; }
 
 .circles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
@@ -191,6 +199,11 @@ button { cursor: pointer; }
 .circ:focus-visible { outline: none; background: var(--ink); }
 .circ:focus-visible::before { inset: 3px; }
 .circ.empty:not([aria-pressed="true"]) { opacity: .35; }
+.fs.neg .circ:hover,
+.fs.neg .circ[aria-pressed="true"] { background: var(--red); }
+.fs.neg .circ[aria-pressed="true"]::before { background: var(--red); }
+.fs.neg .circ[aria-pressed="true"] { color: var(--ink); }
+.fs.neg .circ:focus-visible { background: var(--ink); }
 
 .opt {
   display: flex;
@@ -200,7 +213,6 @@ button { cursor: pointer; }
   border-radius: 6px;
   cursor: pointer;
 }
-.opt input { accent-color: var(--gold); }
 .opt:hover { background: var(--surface); }
 .opt .name { flex: 1; }
 .opt .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
@@ -218,6 +230,7 @@ button { cursor: pointer; }
 .opt { position: relative; }
 .sr { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
 .opt .losango.box {
+  --c: var(--gold);  /* escolas sobrescrevem com a própria cor */
   --box: 15px;
   margin: 0 2px 0 3px;
   position: relative;
@@ -240,6 +253,8 @@ button { cursor: pointer; }
 .opt:hover .losango.box::before { background: var(--surface); }
 .opt.on .losango.box { background: var(--c); opacity: 1; }
 .opt.on .losango.box::before { background: var(--c); }
+/* filtragem reversa: todos os losangos ficam vermelhos, inclusive os das escolas */
+.fs.neg .opt .losango.box { --c: var(--red) !important; }
 .opt .sr:focus-visible + .losango.box { background: var(--ink); opacity: 1; }
 .opt .sr:focus-visible + .losango.box::before { inset: 3px; }
 .opt.on .sr:focus-visible + .losango.box::before { background: var(--c); }
@@ -274,7 +289,18 @@ button { cursor: pointer; }
   color: var(--ink);
 }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+/* filtros selecionados ficam visíveis logo abaixo da barra de busca ao rolar */
+.chips {
+  position: sticky;
+  top: var(--bar-h);
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 10px 0 12px;
+  background: var(--bg);
+}
 .chips:empty { display: none; }
 .chip {
   display: inline-flex;
@@ -289,6 +315,9 @@ button { cursor: pointer; }
 }
 .chip span[aria-hidden] { color: var(--gold); font-size: 16px; line-height: 1; }
 .chip:hover { background: rgba(232, 188, 57, .12); }
+.chip.neg { border-color: var(--red); }
+.chip.neg span[aria-hidden] { color: var(--red); }
+.chip.neg:hover { background: rgba(255, 34, 34, .14); }
 
 .grid {
   display: grid;
@@ -316,6 +345,15 @@ button { cursor: pointer; }
   border-bottom: 3px solid #b89d68;
   border-radius: 2px;
   box-shadow: inset 4px 0 0 var(--school);
+
+  /* cantos cortados em diagonal */
+  --cut: 28px;
+  clip-path: polygon(
+    var(--cut) 0, calc(100% - var(--cut)) 0,
+    100% var(--cut), 100% calc(100% - var(--cut)),
+    calc(100% - var(--cut)) 100%, var(--cut) 100%,
+    0 calc(100% - var(--cut)), 0 var(--cut)
+  );
 }
 .card :focus-visible { outline: 2px solid var(--p-ink); outline-offset: 2px; }
 
@@ -448,7 +486,7 @@ button { cursor: pointer; }
 }
 
 footer {
-  padding: 8px 50px 48px;
+  padding: 8px 32px 48px;
   color: var(--muted);
   font-size: 12.5px;
 }
@@ -468,19 +506,12 @@ details.more .full { white-space: pre-line; margin: 8px 0 0; color: var(--p-ink)
 .results-busy { opacity: .6; transition: opacity .15s; }
 
 @media (max-width: 899px) {
-  .page { width: calc(100% - 16px); margin: 8px auto 16px; }
-  .page::before { border-width: 1.5px; border-top-width: 0; }
-  .page::after { inset: 7px; border-width: 3px; border-top-width: 0; }
-  .frame-top::before { left: 4px; right: 4px; height: 9px; }
-  .frame-top::after { left: 10px; right: 10px; height: 10px; }
-  .frame-top i:nth-child(1) { border-top-width: 1.5px; }
-  .frame-top i:nth-child(2) { top: 7px; left: 7px; right: 7px; border-top-width: 3px; }
-  .top { position: static; }
-  .top-inner { padding: 34px 28px 14px; gap: 12px; align-items: center; }
+  :root { --head-h: 158px; --bar-h: 72px; }
+  .top-inner { padding: 18px 16px 14px; gap: 12px; align-items: center; }
   .brand { flex-basis: 100%; }
   .search { flex: 1 1 0; min-width: 0; }
-  .layout { grid-template-columns: 1fr; gap: 14px; padding: 16px 28px; }
-  footer { padding: 8px 28px 44px; }
+  .layout { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+  footer { padding: 8px 16px 44px; }
   .toggle-filters { display: inline-flex; align-items: center; }
   .filters {
     display: none;

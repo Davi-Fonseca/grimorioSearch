@@ -92,3 +92,70 @@ test("paginação", () => {
   assert.notEqual(p1.hits[0].name, p2.hits[0].name);
   assert.equal(p1.total, docs.length);
 });
+
+test("filtragem reversa: círculo, escola e classe escondem o que foi marcado", () => {
+  const tudo = all({}).total;
+  const sem3 = all({ levels: [3], exclude: ["levels"] });
+  assert.ok(sem3.hits.every((h) => h.level !== 3));
+  assert.equal(sem3.total + all({ levels: [3] }).total, tudo); // as duas listas se completam
+
+  const semEvo = all({ schools: ["Evocation"], exclude: ["schools"] });
+  assert.ok(semEvo.hits.every((h) => h.school !== "Evocation"));
+  assert.equal(semEvo.total + all({ schools: ["Evocation"] }).total, tudo);
+
+  const semMago = all({ classes: ["Wizard", "Cleric"], exclude: ["classes"] });
+  assert.ok(semMago.hits.every((h) => !h.classes.includes("Wizard") && !h.classes.includes("Cleric")));
+  assert.equal(semMago.total + all({ classes: ["Wizard", "Cleric"] }).total, tudo);
+});
+
+test("filtragem reversa de componentes esconde quem exige qualquer um dos marcados", () => {
+  const r = all({ components: ["V", "M"], exclude: ["components"] });
+  assert.ok(r.total > 0);
+  assert.ok(r.hits.every((h) => !h.components.includes("V") && !h.components.includes("M")));
+});
+
+test("filtragem reversa de características: sem concentração e sem ritual", () => {
+  assert.ok(all({ concentration: true, exclude: ["features"] }).hits.every((h) => !h.concentration));
+  assert.ok(all({ ritual: true, exclude: ["features"] }).hits.every((h) => !h.ritual));
+  const ambos = all({ concentration: true, ritual: true, exclude: ["features"] });
+  assert.ok(ambos.hits.every((h) => !h.concentration && !h.ritual));
+});
+
+test("filtragem reversa sem nada marcado não muda nada", () => {
+  const todos = ["levels", "schools", "classes", "components", "features"];
+  assert.equal(all({ exclude: todos }).total, docs.length);
+});
+
+test("o reverso vale só para o filtro marcado; os outros seguem normais", () => {
+  const r = all({ levels: [3], schools: ["Evocation"], exclude: ["levels"] });
+  assert.ok(r.hits.every((h) => h.level !== 3 && h.school === "Evocation"));
+});
+
+test("facetas do filtro reverso ignoram o próprio filtro", () => {
+  const normal = all({ levels: [3] });
+  const reverso = all({ levels: [3], exclude: ["levels"] });
+  assert.deepEqual(normal.facets.levels, reverso.facets.levels);
+});
+
+test("ordenações: círculo crescente/decrescente e nome A–Z/Z–A", () => {
+  const fold = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  const nomes = (sort) => names(all({ sort })).map(fold);
+
+  const az = nomes("name"), za = nomes("name_desc");
+  assert.deepEqual(za, [...az].reverse());
+  assert.deepEqual(az, [...az].sort());
+
+  const asc = all({ sort: "level" }).hits.map((h) => h.level);
+  const desc = all({ sort: "level_desc" }).hits.map((h) => h.level);
+  assert.deepEqual(asc, [...asc].sort((a, b) => a - b));
+  assert.deepEqual(desc, [...desc].sort((a, b) => b - a));
+  assert.equal(desc[0], Math.max(...docs.map((d) => d.level)));
+
+  // dentro do mesmo círculo, o nome continua em ordem A–Z nas duas direções
+  const d = all({ sort: "level_desc" }).hits.filter((h) => h.level === desc[0]).map((h) => fold(h.name));
+  assert.deepEqual(d, [...d].sort());
+});
+
+test("ordenação desconhecida cai no padrão (círculo crescente)", () => {
+  assert.deepEqual(names(all({ sort: "qualquer" })), names(all({ sort: "level" })));
+});

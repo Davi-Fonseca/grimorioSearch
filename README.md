@@ -69,8 +69,8 @@ Não precisa de FastAPI nem de Elasticsearch para o site funcionar: basta servir
 python build_static.py
 node --test tests/search.test.mjs        # opcional (precisa do Node.js)
 
-# 2. Teste localmente (qualquer servidor de arquivos serve)
-python -m http.server 8000 --directory static
+# 2. Teste localmente, sem cache do navegador (http://localhost:8080)
+python serve.py
 
 # 3. Publique (precisa de conta gratuita no Cloudflare)
 npx wrangler deploy                      # usa o wrangler.jsonc deste repositório

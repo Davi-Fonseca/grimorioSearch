@@ -7,29 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=11">
 </head>
 <body>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <filter id="frameInk" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">
-  <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="3" result="c"/>
-  <feDisplacementMap in="SourceGraphic" in2="c" scale="5" xChannelSelector="R" yChannelSelector="G" result="w"/>
-  <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="8" result="m"/>
-  <feDisplacementMap in="w" in2="m" scale="2.4" xChannelSelector="G" yChannelSelector="B" result="r"/>
-  <feGaussianBlur in="r" stdDeviation="0.9" result="b"/>
-  <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -0.7" result="th"/>
-  <feGaussianBlur in="th" stdDeviation="0.45"/>
-  </filter>
-  <filter id="frameInkH" x="-1%" y="-150%" width="102%" height="400%" color-interpolation-filters="sRGB">
-  <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="2" seed="3" result="c"/>
-  <feDisplacementMap in="SourceGraphic" in2="c" scale="5" xChannelSelector="R" yChannelSelector="G" result="w"/>
-  <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="8" result="m"/>
-  <feDisplacementMap in="w" in2="m" scale="2.4" xChannelSelector="G" yChannelSelector="B" result="r"/>
-  <feGaussianBlur in="r" stdDeviation="0.9" result="b"/>
-  <feColorMatrix in="b" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 3 -0.7" result="th"/>
-  <feGaussianBlur in="th" stdDeviation="0.45"/>
-  </filter>
   <filter id="logoInk" x="-3%" y="-12%" width="106%" height="124%" color-interpolation-filters="sRGB">
   <feTurbulence type="fractalNoise" baseFrequency="0.00042367" numOctaves="2" seed="3" result="c"/>
   <feDisplacementMap in="SourceGraphic" in2="c" scale="32.782" xChannelSelector="R" yChannelSelector="G" result="w"/>
@@ -42,7 +24,6 @@
 </svg>
 
 <div class="page">
-<div class="frame-top" aria-hidden="true"><i></i><i></i></div>
 <header class="top">
   <div class="top-inner">
     <div class="brand">
@@ -64,33 +45,63 @@
 
 <main class="layout">
   <aside class="filters" id="filters" aria-label="Filtros">
-    <fieldset>
-      <legend>Círculo <button type="button" class="info" data-info="levels" aria-label="Sobre o filtro Círculo" aria-expanded="false" aria-controls="info-pop">i</button></legend>
-      <div class="circles" id="levels"></div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Classe <button type="button" class="info" data-info="classes" aria-label="Sobre o filtro Classe" aria-expanded="false" aria-controls="info-pop">i</button></legend>
-      <div id="classes"></div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Escola de magia</legend>
-      <div id="schools"></div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Componentes <button type="button" class="info" data-info="components" aria-label="Sobre o filtro Componentes" aria-expanded="false" aria-controls="info-pop">i</button></legend>
-      <div id="components"></div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Características</legend>
-      <div class="switch-row">
-        <label class="opt" id="opt-conc"><input type="checkbox" id="f-conc"><span class="name">Exige concentração</span></label>
-        <label class="opt" id="opt-ritual"><input type="checkbox" id="f-ritual"><span class="name">Pode ser conjurada como ritual</span></label>
+    <section class="fs" data-filter="levels" role="group" aria-labelledby="lg-levels">
+      <div class="fs-head">
+        <h3 class="fs-title" id="lg-levels">Círculo <button type="button" class="info" data-info="levels" aria-label="Sobre o filtro Círculo" aria-expanded="false" aria-controls="info-pop">i</button></h3>
+        <span class="fs-tools">
+          <button type="button" class="tool" data-action="neg" data-tip="Filtragem reversa" aria-label="Filtragem reversa: Círculo" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg></button>
+          <button type="button" class="tool" data-action="clear" data-tip="Limpar filtros" aria-label="Limpar filtros: Círculo"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17"/><path d="M18.5 6l-.9 13a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9L5.5 6"/><path d="M9 6V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2V6"/><path d="M10 10.5v6M14 10.5v6"/></svg></button>
+        </span>
       </div>
-    </fieldset>
+      <div class="circles" id="levels"></div>
+    </section>
+
+    <section class="fs" data-filter="classes" role="group" aria-labelledby="lg-classes">
+      <div class="fs-head">
+        <h3 class="fs-title" id="lg-classes">Classe <button type="button" class="info" data-info="classes" aria-label="Sobre o filtro Classe" aria-expanded="false" aria-controls="info-pop">i</button></h3>
+        <span class="fs-tools">
+          <button type="button" class="tool" data-action="neg" data-tip="Filtragem reversa" aria-label="Filtragem reversa: Classe" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg></button>
+          <button type="button" class="tool" data-action="clear" data-tip="Limpar filtros" aria-label="Limpar filtros: Classe"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17"/><path d="M18.5 6l-.9 13a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9L5.5 6"/><path d="M9 6V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2V6"/><path d="M10 10.5v6M14 10.5v6"/></svg></button>
+        </span>
+      </div>
+      <div id="classes"></div>
+    </section>
+
+    <section class="fs" data-filter="schools" role="group" aria-labelledby="lg-schools">
+      <div class="fs-head">
+        <h3 class="fs-title" id="lg-schools">Escola de magia</h3>
+        <span class="fs-tools">
+          <button type="button" class="tool" data-action="neg" data-tip="Filtragem reversa" aria-label="Filtragem reversa: Escola de magia" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg></button>
+          <button type="button" class="tool" data-action="clear" data-tip="Limpar filtros" aria-label="Limpar filtros: Escola de magia"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17"/><path d="M18.5 6l-.9 13a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9L5.5 6"/><path d="M9 6V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2V6"/><path d="M10 10.5v6M14 10.5v6"/></svg></button>
+        </span>
+      </div>
+      <div id="schools"></div>
+    </section>
+
+    <section class="fs" data-filter="components" role="group" aria-labelledby="lg-components">
+      <div class="fs-head">
+        <h3 class="fs-title" id="lg-components">Componentes <button type="button" class="info" data-info="components" aria-label="Sobre o filtro Componentes" aria-expanded="false" aria-controls="info-pop">i</button></h3>
+        <span class="fs-tools">
+          <button type="button" class="tool" data-action="neg" data-tip="Filtragem reversa" aria-label="Filtragem reversa: Componentes" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg></button>
+          <button type="button" class="tool" data-action="clear" data-tip="Limpar filtros" aria-label="Limpar filtros: Componentes"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17"/><path d="M18.5 6l-.9 13a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9L5.5 6"/><path d="M9 6V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2V6"/><path d="M10 10.5v6M14 10.5v6"/></svg></button>
+        </span>
+      </div>
+      <div id="components"></div>
+    </section>
+
+    <section class="fs" data-filter="features" role="group" aria-labelledby="lg-features">
+      <div class="fs-head">
+        <h3 class="fs-title" id="lg-features">Características</h3>
+        <span class="fs-tools">
+          <button type="button" class="tool" data-action="neg" data-tip="Filtragem reversa" aria-label="Filtragem reversa: Características" aria-pressed="false"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></svg></button>
+          <button type="button" class="tool" data-action="clear" data-tip="Limpar filtros" aria-label="Limpar filtros: Características"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 6h17"/><path d="M18.5 6l-.9 13a2 2 0 0 1-2 1.9H8.4a2 2 0 0 1-2-1.9L5.5 6"/><path d="M9 6V4.2A1.2 1.2 0 0 1 10.2 3h3.6A1.2 1.2 0 0 1 15 4.2V6"/><path d="M10 10.5v6M14 10.5v6"/></svg></button>
+        </span>
+      </div>
+      <div class="switch-row">
+        <label class="opt" id="opt-conc"><input class="sr" type="checkbox" id="f-conc"><span class="losango box"></span><span class="name">Exige concentração</span></label>
+        <label class="opt" id="opt-ritual"><input class="sr" type="checkbox" id="f-ritual"><span class="losango box"></span><span class="name">Pode ser conjurada como ritual</span></label>
+      </div>
+    </section>
 
     <button class="link-btn" id="clear-side" type="button">Limpar filtros</button>
   </aside>
@@ -100,8 +111,10 @@
       <div class="total" id="total" aria-live="polite"></div>
       <label class="sort">Ordenar por
         <select id="sort">
+          <option value="level">Círculo (crescente)</option>
+          <option value="level_desc">Círculo (decrescente)</option>
           <option value="name">Nome (A–Z)</option>
-          <option value="level">Círculo</option>
+          <option value="name_desc">Nome (Z–A)</option>
         </select>
       </label>
     </div>
@@ -111,6 +124,7 @@
   </section>
 </main>
 
+<div id="tip" class="tip" role="tooltip" hidden></div>
 <div id="info-pop" class="info-pop" role="tooltip" hidden></div>
 
 <footer id="footer">
@@ -119,18 +133,18 @@
 </footer>
 </div>
 
-<script src="search.js?v=1"></script>
+<script src="search.js?v=3"></script>
 <script>
 const PAGE = 48;
 
 const SCHOOLS = {
-  Abjuration:    { pt: "Abjuração",    color: "#5b8def" },
+  Abjuration:    { pt: "Abjuração",    color: "#4d83f0" },
   Conjuration:   { pt: "Conjuração",   color: "#f29a3a" },
   Divination:    { pt: "Adivinhação",  color: "#2fc2b0" },
   Enchantment:   { pt: "Encantamento", color: "#e86ab5" },
   Evocation:     { pt: "Evocação",     color: "#ff5a3c" },
-  Illusion:      { pt: "Ilusão",       color: "#9b7bff" },
-  Necromancy:    { pt: "Necromancia",  color: "#7ccb5a" },
+  Illusion:      { pt: "Ilusão",       color: "#7b4fff" },
+  Necromancy:    { pt: "Necromancia",  color: "#70ce47" },
   Transmutation: { pt: "Transmutação", color: "#c99a6b" }
 };
 const CLASSES = {
@@ -148,16 +162,19 @@ const INFO = {
   },
   levels: {
     title: "Círculo",
-    html: `<p><strong>T</strong> = truque (círculo 0). Os números de 1 a 9 são os círculos das magias. Você pode marcar vários.</p>`
+    html: `<p><strong>T</strong> = truque (círculo 0). Os números de 1 a 9 são os círculos das magias. Você pode marcar vários.</p>
+      <p><strong>Filtragem reversa:</strong> o que estiver marcado deixa de aparecer e todo o resto aparece.</p>`
   },
   classes: {
     title: "Classe",
-    html: `<p>Mostra as magias de qualquer uma das classes marcadas.</p>`
+    html: `<p>Mostra as magias de qualquer uma das classes marcadas.</p>
+      <p><strong>Filtragem reversa:</strong> o que estiver marcado deixa de aparecer e todo o resto aparece.</p>`
   },
   components: {
     title: "Componentes",
     html: `<p>Mostra só as magias que exigem todos os componentes marcados.</p>
-      <p><strong>V</strong> = verbal, <strong>S</strong> = somático, <strong>M</strong> = material.</p>`
+      <p><strong>V</strong> = verbal, <strong>S</strong> = somático, <strong>M</strong> = material.</p>
+      <p><strong>Filtragem reversa:</strong> esconde as magias que exigem qualquer um dos componentes marcados.</p>`
   }
 };
 const COMPONENTS = { V: "Verbal (V)", S: "Somático (S)", M: "Material (M)" };
@@ -170,7 +187,8 @@ const levelLabel = (l) => (l === 0 ? "Truque" : `${l}º círculo`);
 
 const state = {
   q: "", levels: new Set(), schools: new Set(), classes: new Set(), components: new Set(),
-  concentration: false, ritual: false, sort: "level"
+  concentration: false, ritual: false, sort: "level",
+  neg: { levels: false, schools: false, classes: false, components: false, features: false } // filtragem reversa por filtro
 };
 let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {} } };
 let status = "loading";
@@ -182,6 +200,12 @@ const toggle = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
 const clearFilters = () => {
   state.levels.clear(); state.schools.clear(); state.classes.clear(); state.components.clear();
   state.concentration = false; state.ritual = false;
+  Object.keys(state.neg).forEach((k) => { state.neg[k] = false; });
+};
+const clearSection = (k) => {
+  if (k === "features") { state.concentration = false; state.ritual = false; }
+  else state[k].clear();
+  state.neg[k] = false;
 };
 
 /* A busca roda aqui no navegador: spells.json é baixado uma vez e indexado (ver search.js). */
@@ -200,6 +224,7 @@ async function runSearch(append = false) {
       components: [...state.components],
       concentration: state.concentration,
       ritual: state.ritual,
+      exclude: Object.keys(state.neg).filter((k) => state.neg[k]),
       sort: state.sort,
       limit: PAGE,
       offset: append ? data.hits.length : 0
@@ -246,20 +271,23 @@ function buildFacets() {
        <span class="name">${SCHOOLS[k].pt}</span><span class="count"></span></label>`
   ).join("");
   el.classes.innerHTML = byPt(CLASSES).map((k) =>
-    `<label class="opt" data-class="${k}"><input type="checkbox" value="${k}">
+    `<label class="opt" data-class="${k}"><input class="sr" type="checkbox" value="${k}">
+       <span class="losango box"></span>
        <span class="name">${CLASSES[k]}</span><span class="count"></span></label>`
   ).join("");
 }
 
 function buildComponents() {
   el.components.innerHTML = Object.keys(COMPONENTS).map((k) =>
-    `<label class="opt" data-component="${k}"><input type="checkbox" value="${k}">
+    `<label class="opt" data-component="${k}"><input class="sr" type="checkbox" value="${k}">
+       <span class="losango box"></span>
        <span class="name">${COMPONENTS[k]}</span><span class="count"></span></label>`
   ).join("");
 }
 
-function chipHtml(kind, value, label) {
-  return `<button type="button" class="chip" data-kind="${kind}" data-value="${esc(value)}" aria-label="Remover filtro: ${esc(label)}">${esc(label)} <span aria-hidden="true">×</span></button>`;
+function chipHtml(kind, value, label, neg = false) {
+  const text = neg ? `Sem ${label}` : label;
+  return `<button type="button" class="chip${neg ? " neg" : ""}" data-kind="${kind}" data-value="${esc(value)}" aria-label="Remover filtro: ${esc(text)}">${esc(text)} <span aria-hidden="true">×</span></button>`;
 }
 
 function renderControls() {
@@ -282,13 +310,22 @@ function renderControls() {
   $("#opt-conc").classList.toggle("on", state.concentration);
   $("#opt-ritual").classList.toggle("on", state.ritual);
 
+  const has = { levels: state.levels.size, schools: state.schools.size, classes: state.classes.size,
+    components: state.components.size, features: (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0) };
+  document.querySelectorAll(".fs[data-filter]").forEach((fs) => {
+    const k = fs.dataset.filter;
+    fs.classList.toggle("neg", state.neg[k]);
+    fs.querySelector('[data-action="neg"]').setAttribute("aria-pressed", state.neg[k]);
+    fs.querySelector('[data-action="clear"]').classList.toggle("idle", !has[k] && !state.neg[k]);
+  });
+
   const chips = [];
-  [...state.levels].sort((a, b) => a - b).forEach((l) => chips.push(chipHtml("levels", l, levelLabel(l))));
-  [...state.schools].forEach((k) => chips.push(chipHtml("schools", k, SCHOOLS[k].pt)));
-  [...state.classes].forEach((k) => chips.push(chipHtml("classes", k, CLASSES[k])));
-  [...state.components].forEach((k) => chips.push(chipHtml("components", k, COMPONENTS[k])));
-  if (state.concentration) chips.push(chipHtml("concentration", "", "Concentração"));
-  if (state.ritual) chips.push(chipHtml("ritual", "", "Ritual"));
+  [...state.levels].sort((a, b) => a - b).forEach((l) => chips.push(chipHtml("levels", l, levelLabel(l), state.neg.levels)));
+  [...state.schools].forEach((k) => chips.push(chipHtml("schools", k, SCHOOLS[k].pt, state.neg.schools)));
+  [...state.classes].forEach((k) => chips.push(chipHtml("classes", k, CLASSES[k], state.neg.classes)));
+  [...state.components].forEach((k) => chips.push(chipHtml("components", k, COMPONENTS[k], state.neg.components)));
+  if (state.concentration) chips.push(chipHtml("concentration", "", "Concentração", state.neg.features));
+  if (state.ritual) chips.push(chipHtml("ritual", "", "Ritual", state.neg.features));
   el.chips.innerHTML = chips.join("");
 
   const act = activeCount();
@@ -398,6 +435,7 @@ function resetAll() { clearFilters(); state.q = ""; el.q.value = ""; changed(); 
 
 el.q.addEventListener("input", () => { state.q = el.q.value; changed(180); });
 el.q.addEventListener("keydown", (e) => { if (e.key === "Escape") { el.q.value = ""; state.q = ""; changed(); } });
+el.sort.value = state.sort;   // o seletor sempre mostra a ordenação em uso
 el.sort.addEventListener("change", () => { state.sort = el.sort.value; changed(); });
 
 el.levels.addEventListener("click", (e) => {
@@ -410,6 +448,15 @@ el.components.addEventListener("change", (e) => { toggle(state.components, e.tar
 el.conc.addEventListener("change", () => { state.concentration = el.conc.checked; changed(); });
 el.ritual.addEventListener("change", () => { state.ritual = el.ritual.checked; changed(); });
 $("#clear-side").addEventListener("click", () => { clearFilters(); changed(); });
+
+/* Botões de cada filtro: filtragem reversa e limpar só aquele filtro */
+$("#filters").addEventListener("click", (e) => {
+  const b = e.target.closest(".tool"); if (!b) return;
+  const k = b.closest(".fs").dataset.filter;
+  if (b.dataset.action === "neg") state.neg[k] = !state.neg[k];
+  else clearSection(k);
+  changed();
+});
 
 el.chips.addEventListener("click", (e) => {
   const c = e.target.closest(".chip"); if (!c) return;
@@ -429,6 +476,54 @@ el.results.addEventListener("click", (e) => {
   const b = e.target.closest(".cls"); if (!b) return;
   toggle(state.classes, b.dataset.class); changed();
 });
+/* Cabeçalho: ao rolar, a parte de cima (logo) sai da tela e fica só a barra de busca.
+   As alturas vêm do CSS (--head-h e --bar-h); aqui só marcamos quando a barra já está fixa. */
+const header = $(".top");
+let headerTick = false;
+function updateStuck() {
+  headerTick = false;
+  const stuckTop = parseFloat(getComputedStyle(header).top) || 0;   // negativo: quanto do cabeçalho sobe
+  header.classList.toggle("stuck", header.getBoundingClientRect().top <= stuckTop + 1);
+}
+window.addEventListener("scroll", () => {
+  if (!headerTick) { headerTick = true; requestAnimationFrame(updateStuck); }
+}, { passive: true });
+window.addEventListener("resize", updateStuck);
+updateStuck();
+
+/* Balão de dica dos botões (Filtragem reversa / Limpar filtros) */
+const tip = $("#tip");
+let tipTimer = null;
+function showTip(t) {
+  clearTimeout(tipTimer);
+  tip.textContent = t.dataset.tip; tip.hidden = false;
+  const r = t.getBoundingClientRect(), m = 8, w = tip.offsetWidth, h = tip.offsetHeight;
+  const left = Math.max(m, Math.min(r.left + r.width / 2 - w / 2, innerWidth - w - m));
+  let top = r.bottom + 8;
+  if (top + h > innerHeight - m) top = r.top - h - 8;
+  tip.style.left = `${left}px`; tip.style.top = `${top}px`;
+}
+function hideTip() { clearTimeout(tipTimer); tip.hidden = true; }
+document.addEventListener("pointerover", (e) => {
+  const t = e.target.closest("[data-tip]");
+  if (t && e.pointerType === "mouse") showTip(t);
+});
+document.addEventListener("pointerout", (e) => {
+  const t = e.target.closest("[data-tip]");
+  if (t && !(e.relatedTarget && t.contains(e.relatedTarget))) hideTip();
+});
+document.addEventListener("pointerdown", (e) => {  // toque: mostra por um instante
+  const t = e.target.closest("[data-tip]");
+  if (t && e.pointerType !== "mouse") { showTip(t); tipTimer = setTimeout(hideTip, 1400); }
+});
+document.addEventListener("focusin", (e) => {
+  const t = e.target.closest("[data-tip]");
+  if (t && e.target.matches(":focus-visible")) showTip(t);
+});
+document.addEventListener("focusout", hideTip);
+window.addEventListener("scroll", hideTip, { passive: true });
+window.addEventListener("resize", hideTip);
+
 /* Popover de Concentração: hover (mouse) ou clique/toque/teclado */
 const pop = $("#info-pop");
 let popBtn = null, popPinned = false, popTimer = null;
