@@ -110,6 +110,7 @@ button { cursor: pointer; }
 }
 
 .filters {
+  --panel: var(--bg);
   position: sticky;
   top: calc(var(--bar-h) + 22px);
   max-height: calc(100vh - var(--bar-h) - 44px);
@@ -121,8 +122,8 @@ button { cursor: pointer; }
 @supports selector(::-webkit-scrollbar) {
   .filters { scrollbar-width: auto; scrollbar-color: auto; }
   .filters::-webkit-scrollbar { width: 8px; }
-  .filters::-webkit-scrollbar-track { background: var(--surface); border-radius: 4px; }
-  .filters::-webkit-scrollbar-thumb { background: #5b6a66; border-radius: 4px; }
+  .filters::-webkit-scrollbar-track { background: var(--surface); }
+  .filters::-webkit-scrollbar-thumb { background: #5b6a66; }
   .filters::-webkit-scrollbar-thumb:hover { background: var(--gold); }
   .filters::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
 }
@@ -133,20 +134,37 @@ button { cursor: pointer; }
 
 /* botões de cada filtro: filtragem reversa e limpar */
 .tool {
+  --c: 7px;                                   /* tamanho do corte dos cantos */
+  --ci: calc(var(--c) - .586px);               /* corte do miolo (mantém a borda uniforme) */
+  --edge: var(--line);
+  --inner: var(--panel);
+  position: relative;
+  isolation: isolate;
   width: 28px;
   height: 28px;
   padding: 0;
   display: grid;
   place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: transparent;
+  border: 0;
+  background: var(--edge);
+  clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)),
+                     calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
   color: var(--muted);
-  transition: color .12s, border-color .12s, background-color .12s;
+  transition: color .12s;
 }
-.tool:hover { color: var(--gold); border-color: var(--gold); }
-.tool:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
-.tool[aria-pressed="true"] { color: var(--red); border-color: var(--red); background: rgba(255, 34, 34, .14); }
+.tool::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--inner);
+  clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
+                     calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
+}
+.tool:hover { --edge: var(--gold); color: var(--gold); }
+.tool:focus-visible { outline: none; --edge: var(--ink); }
+.tool:focus-visible::before { inset: 2px; }
+.tool[aria-pressed="true"] { --edge: var(--red); --inner: color-mix(in srgb, var(--red) 14%, var(--panel)); color: var(--red); }
 .tool.idle { opacity: .45; }
 .tool.idle:hover { opacity: 1; }
 
@@ -216,7 +234,7 @@ button { cursor: pointer; }
 .opt:hover { background: var(--surface); }
 .opt .name { flex: 1; }
 .opt .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
-.dot { width: var(--marker, 9px); height: var(--marker, 9px); border-radius: 50%; flex: none; }
+.dot { width: var(--marker, 9px); height: var(--marker, 9px); clip-path: var(--oct); flex: none; }
 .losango {
   width: var(--marker, 9px);
   height: var(--marker, 9px);
@@ -245,7 +263,7 @@ button { cursor: pointer; }
   content: "";
   position: absolute;
   inset: 1.6px;
-  background: var(--bg);
+  background: var(--panel);
   clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
   transition: background-color .12s;
 }
@@ -303,26 +321,42 @@ button { cursor: pointer; }
 }
 .chips:empty { display: none; }
 .chip {
+  --pt: 11px;
+  --line: var(--gold);
+  --fill: var(--bg);
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   height: 30px;
-  padding: 0 10px 0 12px;
-  border: 1px solid var(--gold);
-  background: transparent;
-  border-radius: 999px;
+  padding: 0 calc(var(--pt) + 3px) 0 calc(var(--pt) + 5px);
+  border: 0;
+  background: var(--line);
+  clip-path: var(--hex);
   font-size: 13px;
 }
-.chip span[aria-hidden] { color: var(--gold); font-size: 16px; line-height: 1; }
-.chip:hover { background: rgba(232, 188, 57, .12); }
-.chip.neg { border-color: var(--red); }
-.chip.neg span[aria-hidden] { color: var(--red); }
-.chip.neg:hover { background: rgba(255, 34, 34, .14); }
+.chip::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
+.chip span[aria-hidden] { color: var(--line); font-size: 16px; line-height: 1; }
+.chip:hover { --fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+.chip.neg { --line: var(--red); }
+.chip.neg:hover { --fill: color-mix(in srgb, var(--red) 16%, var(--bg)); }
+.chip:focus-visible { outline: none; --line: var(--ink); }
+.chip:focus-visible::before { inset: 2px; }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 18px;
+}
+
+/* Formas pontudas: hexágono alongado (no lugar das pílulas) e octógono (no lugar dos círculos).
+   A "borda" é o fundo do elemento; o ::before, com o mesmo formato, cobre o miolo. */
+:root {
+  --oct: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%);
+}
+.chip, .cls, .more-btn {   /* --pt (a ponta) é definido em cada um, por isso --hex fica aqui */
+  --hex: polygon(var(--pt) 0, calc(100% - var(--pt)) 0, 100% 50%, calc(100% - var(--pt)) 100%, var(--pt) 100%, 0 50%);
 }
 
 .card {
@@ -335,16 +369,14 @@ button { cursor: pointer; }
 
   position: relative;
   min-height: 300px;
-  padding: 20px 18px 20px 22px;
+  padding: 23px 20px 23px 24px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   color: var(--p-ink);
-  background: var(--paper);
-  border-top: 3px solid #b89d68;
-  border-bottom: 3px solid #b89d68;
-  border-radius: 2px;
-  box-shadow: inset 4px 0 0 var(--school);
+  isolation: isolate;
+  background: var(--school);   /* a outline é este fundo, visível ao redor do ::before */
+  border: 0;
 
   /* cantos cortados em diagonal */
   --cut: 28px;
@@ -354,6 +386,16 @@ button { cursor: pointer; }
     calc(100% - var(--cut)) 100%, var(--cut) 100%,
     0 calc(100% - var(--cut)), 0 var(--cut)
   );
+}
+.card::before {   /* papel do card, 2px para dentro: o que sobra em volta é a outline; a faixa da esquerda fica mais grossa */
+  --ci: calc(var(--cut) - 1.172px);
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: linear-gradient(90deg, var(--school) 2px, var(--paper) 2px);
+  clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
+                     calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
 }
 .card :focus-visible { outline: 2px solid var(--p-ink); outline-offset: 2px; }
 
@@ -367,15 +409,19 @@ button { cursor: pointer; }
 .card-top .lvl { font-family: var(--display); color: var(--p-red); font-size: 14px; }
 .tags { display: flex; align-items: center; gap: 6px; }
 .info {
+  --line: var(--p-muted);
+  --fill: var(--paper);
+  position: relative;
+  isolation: isolate;
   width: 18px;
   height: 18px;
   padding: 0;
   display: inline-grid;
   place-items: center;
   flex: none;
-  border: 1px solid var(--p-muted);
-  border-radius: 50%;
-  background: transparent;
+  border: 0;
+  background: var(--line);
+  clip-path: var(--oct);
   color: var(--p-muted);
   font-family: var(--display);
   font-size: 12px;
@@ -383,14 +429,21 @@ button { cursor: pointer; }
   font-weight: 700;
   line-height: 1;
 }
+.info::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--oct); }
+.info svg { display: block; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.info:focus-visible { outline: none; }
+.info:focus-visible::before { inset: 2px; }
 .filters .info {
+  --line: var(--muted);
+  --fill: var(--panel);
   margin-left: 6px;
   vertical-align: 2px;
-  border: 1px solid var(--muted);
   color: var(--muted);
 }
-.filters .info:hover, .filters .info[aria-expanded="true"] { background: var(--gold); border-color: var(--gold); color: var(--accent-ink); }
-.card .info:hover, .card .info[aria-expanded="true"] { background: var(--p-ink); border-color: var(--p-ink); color: var(--paper); }
+.filters .info:hover, .filters .info[aria-expanded="true"] { --line: var(--gold); --fill: var(--gold); color: var(--accent-ink); }
+.filters .info:focus-visible { --line: var(--ink); }
+.card .info:hover, .card .info[aria-expanded="true"] { --line: var(--p-ink); --fill: var(--p-ink); color: var(--paper); }
+.card .info:focus-visible { --line: var(--p-ink); }
 
 .info-pop {
   position: fixed;
@@ -436,17 +489,25 @@ button { cursor: pointer; }
 .school-line { display: flex; align-items: center; gap: 7px; font-size: 13.5px; font-weight: 500; flex: none; padding-top: 2px; }
 .classes { display: flex; flex-wrap: wrap; gap: 3px; justify-content: flex-end; }
 .cls {
-  border: 1px solid var(--p-line);
-  background: transparent;
+  --pt: 6px;
+  --line: var(--p-line);
+  --fill: var(--paper);
+  position: relative;
+  isolation: isolate;
+  border: 0;
+  background: var(--line);
+  clip-path: var(--hex);
   color: var(--p-ink);
-  border-radius: 999px;
   height: 20px;
-  padding: 0 7px;
+  padding: 0 calc(var(--pt) + 3px);
   font-size: 11.5px;
   line-height: 1;
 }
-.cls:hover { border-color: var(--p-red); }
-.cls.on { background: #3a2812; border-color: #3a2812; color: #f3e7c8; font-weight: 500; }
+.cls::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
+.cls:hover { --line: var(--p-red); }
+.cls.on { --line: #3a2812; --fill: #3a2812; color: #f3e7c8; font-weight: 500; }
+.card .cls:focus-visible { outline: none; --line: var(--p-red); }
+.card .cls:focus-visible::before { inset: 2px; }
 
 .meta {
   display: grid;
@@ -498,11 +559,22 @@ details.more .full { white-space: pre-line; margin: 8px 0 0; color: var(--p-ink)
 .more-wrap { display: flex; justify-content: center; margin-top: 22px; }
 .more-wrap:empty { display: none; }
 .more-btn {
-  height: 40px; padding: 0 22px;
-  border: 1px solid var(--gold); border-radius: 999px;
-  background: transparent; color: var(--gold);
+  --pt: 16px;
+  --line: var(--gold);
+  --fill: var(--bg);
+  position: relative;
+  isolation: isolate;
+  height: 40px;
+  padding: 0 calc(var(--pt) + 14px);
+  border: 0;
+  background: var(--line);
+  clip-path: var(--hex);
+  color: var(--gold);
 }
-.more-btn:hover { background: rgba(232, 188, 57, .12); }
+.more-btn::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
+.more-btn:hover { --fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+.more-btn:focus-visible { outline: none; --line: var(--ink); }
+.more-btn:focus-visible::before { inset: 2px; }
 .results-busy { opacity: .6; transition: opacity .15s; }
 
 @media (max-width: 899px) {
@@ -514,6 +586,7 @@ details.more .full { white-space: pre-line; margin: 8px 0 0; color: var(--p-ink)
   footer { padding: 8px 16px 44px; }
   .toggle-filters { display: inline-flex; align-items: center; }
   .filters {
+    --panel: var(--surface);
     display: none;
     position: static;
     max-height: none;
