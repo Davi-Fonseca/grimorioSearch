@@ -369,7 +369,7 @@ button { cursor: pointer; }
 
   position: relative;
   min-height: 300px;
-  padding: 23px 20px 23px 24px;
+  padding: 24px 22px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -387,13 +387,13 @@ button { cursor: pointer; }
     0 calc(100% - var(--cut)), 0 var(--cut)
   );
 }
-.card::before {   /* papel do card, 2px para dentro: o que sobra em volta é a outline; a faixa da esquerda fica mais grossa */
-  --ci: calc(var(--cut) - 1.172px);
+.card::before {   /* papel do card, 4px para dentro: o que sobra em volta é a outline, com a mesma espessura dos 4 lados */
+  --ci: calc(var(--cut) - 2.343px);   /* corte do miolo: mantém a diagonal com a mesma espessura */
   content: "";
   position: absolute;
-  inset: 2px;
+  inset: 4px;
   z-index: -1;
-  background: linear-gradient(90deg, var(--school) 2px, var(--paper) 2px);
+  background: var(--paper);
   clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
                      calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
 }
@@ -433,15 +433,22 @@ button { cursor: pointer; }
 .info svg { display: block; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .info:focus-visible { outline: none; }
 .info:focus-visible::before { inset: 2px; }
+/* nos filtros o olho aparece sem o octógono e "acende" ao passar o mouse ou abrir o balão */
 .filters .info {
-  --line: var(--muted);
-  --fill: var(--panel);
-  margin-left: 6px;
-  vertical-align: 2px;
+  clip-path: none;
+  background: none;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  vertical-align: 1px;
   color: var(--muted);
+  transition: color .12s, filter .12s;
 }
-.filters .info:hover, .filters .info[aria-expanded="true"] { --line: var(--gold); --fill: var(--gold); color: var(--accent-ink); }
-.filters .info:focus-visible { --line: var(--ink); }
+.filters .info::before { display: none; }
+.filters .info svg { width: 18px; height: 18px; }
+.filters .info:hover, .filters .info[aria-expanded="true"] { color: var(--gold); filter: drop-shadow(0 0 5px rgba(232, 188, 57, .6)); }
+.filters .info:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
 .card .info:hover, .card .info[aria-expanded="true"] { --line: var(--p-ink); --fill: var(--p-ink); color: var(--paper); }
 .card .info:focus-visible { --line: var(--p-ink); }
 
@@ -474,6 +481,9 @@ button { cursor: pointer; }
 }
 .card h2 {
   margin: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
   font-family: var(--display);
   font-size: 20px;
   line-height: 1.2;

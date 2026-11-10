@@ -159,3 +159,73 @@ test("ordenações: círculo crescente/decrescente e nome A–Z/Z–A", () => {
 test("ordenação desconhecida cai no padrão (círculo crescente)", () => {
   assert.deepEqual(names(all({ sort: "qualquer" })), names(all({ sort: "level" })));
 });
+
+// ---------- relevância: o nome vale mais que rótulos e descrições ----------
+const fold = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const rel = (q, extra = {}) => all({ q, sort: "relevance", ...extra });
+
+test("relevância: 'raio nauseante' acha Raio Nauseante em primeiro", () => {
+  assert.equal(rel("raio nauseante").hits[0].name, "Raio Nauseante");
+  assert.equal(rel("nauseante raio").hits[0].name, "Raio Nauseante"); // ordem das palavras não importa
+});
+
+test("relevância: com várias palavras, só entram magias que têm TODAS elas", () => {
+  const r = rel("raio nauseante");
+  assert.ok(r.total >= 1 && r.total < 10, `esperava poucas, veio ${r.total}`);
+  for (const h of r.hits) {
+    const t = fold(`${h.name} ${h.description} ${h.higher_level || ""} ${h.labels_pt || ""}`);
+    assert.ok(t.includes("raio") && t.includes("nausea"), h.name);
+  }
+});
+
+test("relevância: 'nauseante' sozinho também devolve Raio Nauseante primeiro", () => {
+  assert.equal(rel("nauseante").hits[0].name, "Raio Nauseante");
+});
+
+test("relevância: palavra no nome vem antes de palavra só na descrição", () => {
+  for (const q of ["raio", "fogo", "cura"]) {
+    const r = rel(q);
+    const noNome = (h) => fold(h.name).split(/[^a-z0-9]+/).some((w) => w.startsWith(q.slice(0, 4)));
+    const flags = r.hits.map(noNome);
+    const ultimoDoNome = flags.lastIndexOf(true);
+    const primeiroSemNome = flags.indexOf(false);
+    assert.ok(ultimoDoNome >= 0, `"${q}" deveria ter magias com a palavra no nome`);
+    assert.ok(primeiroSemNome === -1 || ultimoDoNome < primeiroSemNome, `"${q}": magia sem a palavra no nome apareceu antes de uma com ela`);
+  }
+});
+
+test("relevância: nome igual ao digitado vence nomes que apenas o contêm", () => {
+  const nome = docs.find((d) => d.name === "Raio Solar")?.name ?? docs[0].name;
+  assert.equal(rel(nome).hits[0].name, nome);
+  assert.equal(rel(fold(nome).toUpperCase()).hits[0].name, nome);
+});
+
+test("relevância: nome que começa com o digitado vem antes de nome que só contém a palavra", () => {
+  const r = rel("raio").hits.map((h) => h.name);
+  const comecam = r.filter((n) => fold(n).startsWith("raio"));
+  assert.deepEqual(r.slice(0, comecam.length).sort(), [...comecam].sort());
+});
+
+test("relevância: mesmas magias que as outras ordenações, só em outra ordem", () => {
+  const a = names(all({ q: "raio", sort: "relevance" })).sort();
+  const b = names(all({ q: "raio", sort: "level" })).sort();
+  assert.deepEqual(a, b);
+  assert.notDeepEqual(names(all({ q: "raio", sort: "relevance" })), names(all({ q: "raio", sort: "level" })));
+});
+
+test("relevância sem busca = círculo crescente; ordenações escolhidas continuam valendo com busca", () => {
+  assert.deepEqual(names(all({ sort: "relevance" })), names(all({ sort: "level" })));
+  const az = names(all({ q: "raio", sort: "name" })).map(fold);
+  assert.deepEqual(az, [...az].sort());
+});
+
+test("relevância: erro de digitação continua achando pelo nome", () => {
+  assert.equal(rel("raio nauseate").hits[0].name, "Raio Nauseante");
+  assert.equal(rel("raio nausean").hits[0].name, "Raio Nauseante"); // começo da palavra
+});
+
+test("relevância: busca respeita os filtros e as facetas", () => {
+  const r = rel("raio", { schools: ["Evocation"] });
+  assert.ok(r.hits.every((h) => h.school === "Evocation"));
+  assert.ok(r.total < rel("raio").total);
+});

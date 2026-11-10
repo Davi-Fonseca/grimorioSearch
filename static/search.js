@@ -1,13 +1,18 @@
 /* Busca de magias no navegador (substitui a API FastAPI + Elasticsearch).
  *
- * Reproduz o que o app.py fazia:
- *   - o texto da busca só decide QUAIS magias entram (a ordem é sempre por círculo ou nome);
- *   - entra a magia cujo nome é igual ao digitado, cujo nome começa com o que foi digitado
- *     ("fir" -> "Fireball") ou que tem alguma palavra parecida (com tolerância a erros de digitação)
- *     no nome, na descrição, em "círculos superiores" ou nos rótulos (escola, classe, círculo…);
- *   - filtros: círculo/escola/classe (qualquer um dos marcados), componentes (todos os marcados),
- *     concentração e ritual; cada filtro pode virar "reverso" (p.exclude): o que está marcado some;
- *   - facetas disjuntivas: a contagem de cada filtro ignora o próprio filtro.
+ * Quem entra na lista:
+ *   - magias com alguma palavra parecida (tolera erros de digitação e plural) no nome, nos rótulos
+ *     (escola, classe, círculo…) ou na descrição; nomes que começam com o que foi digitado ("fir" -> "Fireball");
+ *   - se a busca tem 2 ou mais palavras e existem magias com TODAS elas, só essas entram
+ *     ("raio nauseante" não traz mais todas as magias com "raio").
+ *
+ * Como são ordenadas (ordenação "relevance"): o NOME pesa muito mais que rótulos, que pesam mais que a descrição.
+ *   nome igual ao digitado > nome começando com ele > todas as palavras no nome > cada palavra no nome
+ *   > rótulos > descrição. Empates seguem círculo e nome.
+ *
+ * Filtros: círculo/escola/classe (qualquer um dos marcados), componentes (todos os marcados), concentração
+ * e ritual; cada filtro pode virar "reverso" (p.exclude): o que está marcado some.
+ * Facetas disjuntivas: a contagem de cada filtro ignora o próprio filtro.
  */
 (function (root) {
   "use strict";
@@ -64,60 +69,87 @@
   // 0 a 4 letras: exato; 5 a 8: 1 erro; 9 ou mais: 2 erros (como o fuzziness AUTO:5,9)
   const maxEdits = (len) => (len < 5 ? 0 : len < 9 ? 1 : 2);
 
+  // Pontos por palavra digitada, conforme onde ela aparece (o nome vale muito mais que a descrição)
+  const W = { nameExact: 100, namePrefix: 85, nameFuzzy: 55, labelExact: 25, labelFuzzy: 15, textExact: 10, textFuzzy: 5 };
+
   function createIndex(docs) {
-    const vocab = new Map(); // radical -> conjunto de posições das magias
-    const names = [];        // por magia: nome sem acento e suas palavras
-    const add = (stemmed, i) => {
-      let set = vocab.get(stemmed);
-      if (!set) vocab.set(stemmed, (set = new Set()));
+    const vName = new Map(), vLabel = new Map(), vText = new Map(); // radical -> posições das magias
+    const names = [];                                               // por magia: nome sem acento e palavras
+    const add = (map, stemmed, i) => {
+      let set = map.get(stemmed);
+      if (!set) map.set(stemmed, (set = new Set()));
       set.add(i);
     };
+    const feed = (map, field, i) => tokenize(field).forEach((t) => { if (!STOP.has(t)) add(map, stem(t), i); });
     docs.forEach((d, i) => {
-      const nameTokens = tokenize(d.name);
-      names.push({ raw: fold(d.name).trim(), tokens: nameTokens });
-      [d.name, d.description, d.higher_level, d.labels_pt].forEach((field) => {
-        tokenize(field).forEach((t) => { if (!STOP.has(t)) add(stem(t), i); });
-      });
+      names.push({ raw: fold(d.name).trim(), tokens: tokenize(d.name) });
+      feed(vName, d.name, i);
+      feed(vLabel, d.labels_pt, i);
+      feed(vText, d.description, i);
+      feed(vText, d.higher_level, i);
     });
-    return { docs, vocab, names, cache: new Map() };
+    return { docs, pos: new Map(docs.map((d, i) => [d, i])), vName, vLabel, vText, names, cache: new Map() };
   }
 
-  function textMatches(index, q) {
+  // Magias que casam com UMA palavra digitada -> pontos (o melhor lugar onde a palavra aparece)
+  function matchTerm(index, t) {
+    const s = stem(t), max = maxEdits(s.length), out = new Map();
+    const put = (docs, w) => docs.forEach((i) => { if ((out.get(i) || 0) < w) out.set(i, w); });
+    const scan = (vocab, exactW, fuzzyW) => {
+      const exact = vocab.get(s);
+      if (exact) put(exact, exactW);
+      if (!max) return;
+      vocab.forEach((set, v) => { if (v !== s && v[0] === s[0] && within(s, v, max)) put(set, fuzzyW); });
+    };
+    scan(index.vName, W.nameExact, W.nameFuzzy);
+    if (t.length >= 3) {  // começo de palavra do nome: "nausea" -> "Nauseante"
+      index.names.forEach((n, i) => { if (n.tokens.some((w) => w.length > t.length && w.startsWith(t))) put([i], W.namePrefix); });
+    }
+    scan(index.vLabel, W.labelExact, W.labelFuzzy);
+    scan(index.vText, W.textExact, W.textFuzzy);
+    return out;
+  }
+
+  // Devolve { ids: magias que entram, score: pontos de cada uma } (ou null, sem busca)
+  function rank(index, q) {
     const text = (q || "").trim();
-    if (!text) return null; // sem busca: todas as magias
+    if (!text) return null;
     if (index.cache.has(text)) return index.cache.get(text);
 
-    const out = new Set();
     const folded = fold(text).trim();
     const raw = tokenize(text);
-
-    // 1) nome igual ao digitado
-    index.names.forEach((n, i) => { if (n.raw === folded) out.add(i); });
-
-    // 2) nome começando com o digitado (todas as palavras digitadas, mínimo 2 letras cada)
-    if (raw.length && raw.every((t) => t.length >= 2 && t.length <= 15)) {
-      index.names.forEach((n, i) => {
-        if (raw.every((t) => n.tokens.some((w) => w.startsWith(t)))) out.add(i);
-      });
-    }
-
-    // 3) alguma palavra parecida em qualquer campo de texto
     let terms = raw.filter((t) => !STOP.has(t));
     if (!terms.length) terms = raw;
-    terms.forEach((t) => {
-      const s = stem(t);
-      const max = maxEdits(s.length);
-      const exact = index.vocab.get(s);
-      if (exact) exact.forEach((i) => out.add(i));
-      if (max === 0) return;
-      index.vocab.forEach((set, v) => {
-        if (v === s || v[0] !== s[0]) return;
-        if (within(s, v, max)) set.forEach((i) => out.add(i));
-      });
+
+    const score = new Map(), found = new Map(), inName = new Map();
+    terms.map((t) => matchTerm(index, t)).forEach((m) => m.forEach((w, i) => {
+      score.set(i, (score.get(i) || 0) + w);
+      found.set(i, (found.get(i) || 0) + 1);
+      if (w >= W.nameFuzzy) inName.set(i, (inName.get(i) || 0) + 1);
+    }));
+
+    const strong = new Set();   // nomes iguais ao digitado ou que começam com as palavras digitadas
+    const prefixable = raw.length > 0 && raw.every((t) => t.length >= 2 && t.length <= 15);
+    index.names.forEach((n, i) => {
+      let bonus = 0;
+      if (n.raw === folded) { bonus += 2000; strong.add(i); }
+      else if (n.raw.startsWith(folded)) bonus += 200;
+      if (prefixable && raw.every((t) => n.tokens.some((w) => w.startsWith(t)))) { bonus += 150; strong.add(i); }
+      if (raw.length > 1 && (" " + n.raw + " ").includes(" " + folded + " ")) bonus += 300;   // a frase inteira no nome
+      if (inName.get(i) === terms.length) bonus += 300;                                       // todas as palavras no nome
+      if (terms.some((t) => n.tokens[0] && n.tokens[0].startsWith(t))) bonus += 40;           // nome começa com a palavra
+      if (bonus) score.set(i, (score.get(i) || 0) + bonus);
     });
 
-    index.cache.set(text, out);
-    return out;
+    // várias palavras: se há magias com TODAS elas, só essas entram
+    let ids;
+    const all = terms.length > 1 ? [...found].filter(([, n]) => n === terms.length).map(([i]) => i) : [];
+    ids = all.length ? new Set([...all, ...strong]) : new Set(score.keys());
+    ids.forEach((i) => score.set(i, score.get(i) - 2 * index.names[i].tokens.length));        // nomes curtos primeiro
+
+    const result = { ids, score };
+    index.cache.set(text, result);
+    return result;
   }
 
   // Filtragem reversa (p.exclude): no filtro marcado como reverso, o que foi selecionado NÃO aparece.
@@ -145,9 +177,9 @@
       params
     );
     p.levels = [...p.levels].map(Number);
-    const matched = textMatches(index, p.q);
+    const ranked = rank(index, p.q);
     const base = [];
-    index.docs.forEach((d, i) => { if (!matched || matched.has(i)) base.push(d); });
+    index.docs.forEach((d, i) => { if (!ranked || ranked.ids.has(i)) base.push(d); });
 
     const hits = base.filter((d) => passes(d, p, null));
 
@@ -174,6 +206,9 @@
       name: byName,                                             // A–Z
       name_desc: (a, b) => byName(b, a),                        // Z–A
     };
+    // relevância: mais pontos primeiro; empate (e busca vazia) segue círculo e nome
+    orders.relevance = (a, b) =>
+      (ranked ? ranked.score.get(index.pos.get(b)) - ranked.score.get(index.pos.get(a)) : 0) || orders.level(a, b);
     hits.sort(orders[p.sort] || orders.level);
 
     return {
