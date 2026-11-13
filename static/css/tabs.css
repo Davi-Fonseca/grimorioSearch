@@ -1,0 +1,53 @@
+/* Abas do cabeçalho */
+
+[hidden] { display: none !important; }
+
+/* a busca (e as abas acima dela) ocupa o espaço ao lado do logo */
+.top-main { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.top-row { display: flex; align-items: flex-end; gap: 28px; }
+.top.stuck .tabs { display: none; }   /* com o logo fora da tela, sobra só a busca */
+
+.tabs { display: flex; align-items: flex-end; gap: 8px; }
+
+.tab {
+  --cut: 10px;                                  
+  --ci: calc(var(--cut) - 0.586px);             
+  --line: #2b3836;
+  --fill: var(--bg);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 calc(var(--cut) + 10px);
+  border: 0;
+  background: var(--line);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
+                     calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.tab::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--fill);
+  clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
+                     calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
+}
+
+.tab-icon { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.tab:hover { --line: var(--gold); color: var(--ink); }
+
+.tab.on { --line: var(--gold); --fill: var(--gold); color: var(--accent-ink); font-weight: 700;
+          --cut: 12px; height: 42px; font-size: 15px; }
+
+.tab.on .tab-icon { width: 20px; height: 20px; }
+
+.tab:focus-visible { outline: none; --line: var(--ink); --ci: calc(var(--cut) - 1.172px); }
+
+.tab:focus-visible::before { inset: 2px; }

@@ -1,6 +1,6 @@
 /* Card de uma magia (devolve HTML; não toca no DOM). */
 import { SCHOOLS, CLASSES } from "../config.js";
-import { esc, levelLabel, rangeHtml } from "../format.js";
+import { esc, levelLabel, rangeHtml, linkConditions } from "../format.js";
 
 const EYE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>`;
 
@@ -32,8 +32,8 @@ export function cardHtml(s, selectedClasses = new Set()) {
     <p class="summary">${esc(s.summary)}</p>
     <details class="more">
       <summary>${s.lang === "pt" ? "Descrição completa" : "Descrição completa (em inglês)"}</summary>
-      <p class="full">${esc(s.description)}</p>
-      ${s.higher_level ? `<p class="full"><strong>Em círculos superiores.</strong> ${esc(s.higher_level)}</p>` : ""}
+      <p class="full">${linkConditions(esc(s.description))}</p>
+      ${s.higher_level ? `<p class="full"><strong>Em círculos superiores.</strong> ${linkConditions(esc(s.higher_level))}</p>` : ""}
     </details>
   </article>`;
 }

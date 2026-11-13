@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="css/components.css">
 <link rel="stylesheet" href="css/card.css">
 <link rel="stylesheet" href="css/popovers.css">
+<link rel="stylesheet" href="css/tabs.css">
+<link rel="stylesheet" href="css/conditions.css">
 <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -26,17 +28,31 @@
       </h1>
       <span class="tagline">Magias de D&amp;D 5ª edição</span>
     </div>
-    <div class="search">
-      <input id="q" type="search" autocomplete="off" spellcheck="false"
-             placeholder="Nome ou efeito (ex.: fogo, cura)"
-             aria-label="Buscar magias">
-      <kbd aria-hidden="true">/</kbd>
+    <div class="top-main">
+      <div class="tabs" role="tablist" aria-label="Seções do grimório">
+        <button type="button" class="tab on" role="tab" id="tab-spells" data-tab="spells" aria-selected="true" aria-controls="view-spells">
+          <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 22H5.5a1 1 0 0 1 0-5h4.501"/><path d="m21 22-1.879-1.878"/><path d="M3 19.5v-15A2.5 2.5 0 0 1 5.5 2H18a1 1 0 0 1 1 1v8"/><circle cx="17" cy="18" r="3"/></svg>
+          <span>Magias</span>
+        </button>
+        <button type="button" class="tab" role="tab" id="tab-conditions" data-tab="conditions" aria-selected="false" aria-controls="view-conditions" tabindex="-1">
+          <svg class="tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 11a2 2 0 1 1-4 0 4 4 0 0 1 8 0 6 6 0 0 1-12 0 8 8 0 0 1 16 0 10 10 0 1 1-20 0 11.93 11.93 0 0 1 2.42-7.22 2 2 0 1 1 3.16 2.44"/></svg>
+          <span>Condições</span>
+        </button>
+      </div>
+      <div class="top-row">
+        <div class="search">
+          <input id="q" type="search" autocomplete="off" spellcheck="false"
+                 placeholder="Nome ou efeito (ex.: fogo, cura)"
+                 aria-label="Buscar magias">
+          <kbd aria-hidden="true">/</kbd>
+        </div>
+        <button class="toggle-filters" id="toggle-filters" aria-expanded="false" aria-controls="filters">Filtros</button>
+      </div>
     </div>
-    <button class="toggle-filters" id="toggle-filters" aria-expanded="false" aria-controls="filters">Filtros</button>
   </div>
 </header>
 
-<main class="layout">
+<main class="layout" id="view-spells" role="tabpanel" aria-labelledby="tab-spells">
   <aside class="filters" id="filters" aria-label="Filtros">
     <section class="fs" data-filter="levels" role="group" aria-labelledby="lg-levels">
       <div class="fs-head">
@@ -115,6 +131,22 @@
   </section>
 </main>
 
+<section class="cond-view" id="view-conditions" role="tabpanel" aria-labelledby="tab-conditions" hidden>
+  <div class="toolbar">
+    <div class="total" id="cond-total" aria-live="polite"></div>
+  </div>
+  <div class="cond-grid" id="cond-grid"></div>
+</section>
+
+<dialog class="cond-dialog" id="cond-dialog" aria-labelledby="cond-title">
+  <div class="cond-sheet">
+    <button type="button" class="cond-close" id="cond-close" aria-label="Fechar">&times;</button>
+    <h2 id="cond-title"></h2>
+    <div class="cond-body" id="cond-body"></div>
+  </div>
+</dialog>
+
+<div id="cond-pop" class="info-pop cond-pop" role="tooltip" hidden></div>
 <div id="tip" class="tip" role="tooltip" hidden></div>
 <div id="info-pop" class="info-pop" role="tooltip" hidden></div>
 

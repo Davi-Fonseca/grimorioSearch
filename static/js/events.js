@@ -2,11 +2,12 @@
 import { state, toggle, clearFilters, clearSection, removeFilter } from "./state.js";
 import { el } from "./dom.js";
 import { changed, runSearch, applyQuery, resetAll } from "./app.js";
+import { isSpellsTab } from "./ui/tabs.js";
 
 export function bindEvents() {
   // busca e ordenação
-  el.q.addEventListener("input", () => { applyQuery(el.q.value); changed(180); });
-  el.q.addEventListener("keydown", (e) => { if (e.key === "Escape") { el.q.value = ""; applyQuery(""); changed(); } });
+  el.q.addEventListener("input", () => { if (!isSpellsTab()) return; applyQuery(el.q.value); changed(180); });
+  el.q.addEventListener("keydown", (e) => { if (e.key === "Escape" && isSpellsTab()) { el.q.value = ""; applyQuery(""); changed(); } });
   el.sort.addEventListener("change", () => { state.sort = el.sort.value; changed(); });
 
   // filtros
