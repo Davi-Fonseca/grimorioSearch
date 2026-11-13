@@ -1,0 +1,29 @@
+/* Telas pequenas e preferência por menos movimento. Sempre por último. */
+
+@media (max-width: 899px) {
+  :root { --head-h: 198px; --bar-h: 72px; }
+  .top-inner { padding: 18px 16px 14px; gap: 12px; align-items: center; }
+  .brand { flex-basis: 100%; }
+  .search { flex: 1 1 0; min-width: 0; }
+  .layout { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
+  footer { padding: 8px 16px 44px; }
+  .toggle-filters { display: inline-flex; align-items: center; }
+  .filters {
+    --panel: var(--surface);
+    display: none;
+    position: static;
+    max-height: none;
+    overflow: visible;
+    padding: 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+  .filters.open { display: block; }
+  .circles { grid-template-columns: repeat(5, 48px); }
+  .logo img { height: 81px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}

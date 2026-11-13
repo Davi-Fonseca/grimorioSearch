@@ -1,0 +1,96 @@
+/* Ícone do olho, balão de ajuda e balão de dica. Vem depois do card para vencer regras iguais dele. */
+
+.tip {
+  position: fixed;
+  z-index: 120;
+  padding: 5px 10px;
+  background: var(--ink);
+  color: var(--bg);
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.3;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .5);
+}
+
+.tip[hidden] { display: none; }
+
+.info {
+  --line: var(--p-muted);
+  --fill: var(--paper);
+  position: relative;
+  isolation: isolate;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  border: 0;
+  background: var(--line);
+  clip-path: var(--oct);
+  color: var(--p-muted);
+  font-family: var(--display);
+  font-size: 12px;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.info::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--oct); }
+
+.info svg { display: block; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+.info:focus-visible { outline: none; }
+
+.info:focus-visible::before { inset: 2px; }
+
+/* nos filtros o olho aparece sem o octógono e "acende" ao passar o mouse ou abrir o balão */
+.filters .info {
+  clip-path: none;
+  background: none;
+  width: 22px;
+  height: 22px;
+  margin-left: 4px;
+  vertical-align: 1px;
+  color: var(--muted);
+  transition: color .12s, filter .12s;
+}
+
+.filters .info::before { display: none; }
+
+.filters .info svg { width: 18px; height: 18px; }
+
+.filters .info:hover, .filters .info[aria-expanded="true"] { color: var(--gold); filter: drop-shadow(0 0 5px rgba(232, 188, 57, .6)); }
+
+.filters .info:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
+
+.card .info:hover, .card .info[aria-expanded="true"] { --line: var(--p-ink); --fill: var(--p-ink); color: var(--paper); }
+
+.card .info:focus-visible { --line: var(--p-ink); }
+
+.info-pop {
+  position: fixed;
+  z-index: 100;
+  width: max-content;
+  max-width: min(360px, calc(100vw - 16px));
+  max-height: calc(100vh - 16px);
+  overflow-y: auto;
+  padding: 14px 16px;
+  background: #f4ecd6;
+  color: #2b1d10;
+  border: 1px solid #b89d68;
+  border-radius: 2px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.info-pop[hidden] { display: none; }
+
+.info-pop h3 { margin: 0 0 6px; font-family: var(--display); font-size: 16px; color: #9c1d1d; }
+
+.info-pop p { margin: 0 0 8px; }
+
+.info-pop p:last-child { margin-bottom: 0; }

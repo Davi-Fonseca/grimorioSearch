@@ -1,0 +1,194 @@
+/* Filtros da lateral: títulos, botões de cada filtro, círculos, opções com losango e barra de rolagem. */
+
+.filters {
+  --panel: var(--bg);
+  position: sticky;
+  top: calc(var(--bar-h) + 22px);
+  max-height: calc(100vh - var(--bar-h) - 44px);
+  overflow-y: auto;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #5b6a66 transparent;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .filters { scrollbar-width: auto; scrollbar-color: auto; }
+  .filters::-webkit-scrollbar { width: 8px; }
+  .filters::-webkit-scrollbar-track { background: var(--surface); }
+  .filters::-webkit-scrollbar-thumb { background: #5b6a66; }
+  .filters::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+  .filters::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+}
+
+.filters .fs { margin: 0 0 24px; padding: 0; min-width: 0; }
+
+.fs-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; min-height: 28px; }
+
+.fs-title { margin: 0; padding: 0; font-family: var(--display); font-size: 17px; font-weight: 400; }
+
+.fs-tools { margin-left: auto; display: flex; gap: 6px; }
+
+/* botões de cada filtro: filtragem reversa e limpar */
+.tool {
+  --c: 7px;                                   /* tamanho do corte dos cantos */
+  --ci: calc(var(--c) - .586px);               /* corte do miolo (mantém a borda uniforme) */
+  --edge: var(--line);
+  --inner: var(--panel);
+  position: relative;
+  isolation: isolate;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: var(--edge);
+  clip-path: polygon(var(--c) 0, calc(100% - var(--c)) 0, 100% var(--c), 100% calc(100% - var(--c)),
+                     calc(100% - var(--c)) 100%, var(--c) 100%, 0 calc(100% - var(--c)), 0 var(--c));
+  color: var(--muted);
+  transition: color .12s;
+}
+
+.tool::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--inner);
+  clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
+                     calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
+}
+
+.tool:hover { --edge: var(--gold); color: var(--gold); }
+
+.tool:focus-visible { outline: none; --edge: var(--ink); }
+
+.tool:focus-visible::before { inset: 2px; }
+
+.tool[aria-pressed="true"] { --edge: var(--red); --inner: color-mix(in srgb, var(--red) 14%, var(--panel)); color: var(--red); }
+
+.tool.idle { opacity: .45; }
+
+.tool.idle:hover { opacity: 1; }
+
+.circles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
+.circ {
+  --nonagon: polygon(50.0% 1.5%, 82.1% 13.2%, 99.2% 42.8%, 93.3% 76.5%, 67.1% 98.5%, 32.9% 98.5%, 6.7% 76.5%, 0.8% 42.8%, 17.9% 13.2%);
+  position: relative;
+  isolation: isolate;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: var(--line);
+  clip-path: var(--nonagon);
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.circ::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--surface);
+  clip-path: var(--nonagon);
+  transition: background-color .12s;
+}
+
+.circ:hover { background: var(--gold); }
+
+.circ[aria-pressed="true"] {
+  background: var(--gold);
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.circ[aria-pressed="true"]::before { background: var(--gold); }
+
+.circ:focus-visible { outline: none; background: var(--ink); }
+
+.circ:focus-visible::before { inset: 3px; }
+
+.circ.empty:not([aria-pressed="true"]) { opacity: .35; }
+
+.fs.neg .circ:hover,
+.fs.neg .circ[aria-pressed="true"] { background: var(--red); }
+
+.fs.neg .circ[aria-pressed="true"]::before { background: var(--red); }
+
+.fs.neg .circ[aria-pressed="true"] { color: var(--ink); }
+
+.fs.neg .circ:focus-visible { background: var(--ink); }
+
+.opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.opt:hover { background: var(--surface); }
+
+.opt .name { flex: 1; }
+
+.opt .count { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+.dot { width: var(--marker, 9px); height: var(--marker, 9px); clip-path: var(--oct); flex: none; }
+
+.losango {
+  width: var(--marker, 9px);
+  height: var(--marker, 9px);
+  flex: none;
+  background: var(--c, var(--muted));
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+}
+
+/* nos filtros de escola, o losango é a própria caixa de seleção:
+   vazado quando desmarcado, preenchido com a cor da escola quando marcado */
+.opt { position: relative; }
+
+.sr { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
+
+.opt .losango.box {
+  --c: var(--gold);  /* escolas sobrescrevem com a própria cor */
+  --box: 15px;
+  margin: 0 2px 0 3px;
+  position: relative;
+  isolation: isolate;
+  width: var(--box);
+  height: var(--box);
+  background: var(--muted);
+  opacity: .75;
+  transition: background-color .12s, opacity .12s;
+}
+
+.opt .losango.box::before {
+  content: "";
+  position: absolute;
+  inset: 1.6px;
+  background: var(--panel);
+  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  transition: background-color .12s;
+}
+
+.opt:hover .losango.box { background: var(--c); opacity: 1; }
+
+.opt:hover .losango.box::before { background: var(--surface); }
+
+.opt.on .losango.box { background: var(--c); opacity: 1; }
+
+.opt.on .losango.box::before { background: var(--c); }
+
+/* filtragem reversa: todos os losangos ficam vermelhos, inclusive os das escolas */
+.fs.neg .opt .losango.box { --c: var(--red) !important; }
+
+.opt .sr:focus-visible + .losango.box { background: var(--ink); opacity: 1; }
+
+.opt .sr:focus-visible + .losango.box::before { inset: 3px; }
+
+.opt.on .sr:focus-visible + .losango.box::before { background: var(--c); }
+
+.switch-row { display: flex; flex-direction: column; gap: 4px; }

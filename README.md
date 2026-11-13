@@ -19,7 +19,7 @@ grimorio/
 ├── app.py  ingest.py  vocab.py  spells_pt.py  validate_pt.py
 ├── docker-compose.yml  requirements.txt
 ├── data/5e-SRD-Spells-2024.json
-└── static/index.html  static/style.css
+└── static/   (index.html, css/, js/, spells.json: ver "Organização do front-end")
 ```
 
 ```bash
@@ -61,13 +61,13 @@ pytest
 
 ## Publicar de graça no Cloudflare (site estático)
 
-A interface faz a busca e os filtros **no navegador**, a partir de `static/spells.json` e `static/search.js`.
+A interface faz a busca e os filtros **no navegador**, a partir de `static/spells.json` e do motor em `static/js/search/`.
 Não precisa de FastAPI nem de Elasticsearch para o site funcionar: basta servir a pasta `static/`.
 
 ```bash
 # 1. Sempre que mudar data/spells-pt.jsonl, gere o arquivo de dados e confira a busca
 python build_static.py
-node --test tests/search.test.mjs        # opcional (precisa do Node.js)
+node --test                              # opcional (precisa do Node.js 22 ou mais novo): roda todos os testes de tests/
 
 # 2. Teste localmente, sem cache do navegador (http://localhost:8080)
 python serve.py
@@ -89,7 +89,7 @@ necessários se você quiser a versão com servidor; a interface atual não usa 
 |---|---|
 | `data/5e-SRD-Spells-2024.json` | Magias do SRD 2024, em inglês (cópia do repositório 5e-bits/5e-database) |
 | `vocab.py` | Escolas, classes e tipos de dano em português |
-| `build_static.py`, `static/search.js`, `static/spells.json`, `wrangler.jsonc` | Site estático: gera os dados, busca no navegador e configuração do Cloudflare |
+| `build_static.py`, `static/spells.json`, `wrangler.jsonc`, `serve.py` | Site estático: gera os dados, configuração do Cloudflare e servidor local sem cache |
 | `ingest.py` | Normaliza os dados, cria o índice (mapeamento e analisadores) e indexa |
 | `Dockerfile` | Imagem da API, com as dependências instaladas uma vez |
 | `spells_pt.py` | Esquema, validação e adaptação das magias em português, e cruzamento com o SRD |
@@ -98,11 +98,56 @@ necessários se você quiser a versão com servidor; a interface atual não usa 
 | `data/glossario.csv` | Glossário de termos usado no prompt e na verificação das traduções |
 | `docs/prompt-extracao.md` | Prompt para extrair as magias do PDF |
 | `app.py` | API `/api/search` e `/api/health`; monta a consulta do Elasticsearch |
-| `static/index.html` | Estrutura da interface e lógica (JavaScript) |
-| `static/style.css` | Estilos (identidade visual, layout e responsividade) |
-| `tests/` | Testes da normalização, da consulta e do endpoint |
+| `static/index.html` | Só a estrutura (HTML) da interface |
+| `static/css/` | Estilos, um arquivo por assunto (ver "Organização do front-end") |
+| `static/js/` | Código da interface em módulos ES (ver "Organização do front-end") |
+| `tests/` | Testes em Python (normalização, consulta, endpoint) e em Node (busca, estado, cards, arquitetura) |
+
+## Organização do front-end
+
+Sem etapa de build: o navegador carrega os arquivos como estão (`<script type="module">`). Para abrir localmente use
+`python serve.py` (não abra o `index.html` com duplo clique: módulos e `fetch` exigem um servidor).
+
+```
+static/
+  index.html            estrutura da página (nenhum JavaScript ou CSS embutido)
+  spells.json           dados (gerado por build_static.py)
+  css/                  a ordem de carregamento importa e está no index.html
+    base.css            cores, fontes, reset
+    layout.css          cabeçalho, busca, grade, rodapé, estados vazios
+    filters.css         lateral de filtros, botões de cada filtro, círculos, losangos
+    components.css      formas pontudas (hexágono/octógono), chips, botões
+    card.css            card da magia
+    popovers.css        olho, balão de ajuda e balão de dica
+    responsive.css      celular e "menos movimento" (sempre o último)
+  js/
+    main.js             ponto de entrada: monta a página e liga tudo
+    app.js              busca e atualização da tela (runSearch, changed, resetAll)
+    events.js           eventos da página -> estado
+    state.js            o que está marcado, busca e ordenação      (sem DOM)
+    config.js           escolas, classes, componentes, tamanho da página (sem DOM)
+    info-texts.js       textos dos balões de ajuda                 (sem DOM)
+    format.js           esc, levelLabel, alcance em quadrados      (sem DOM)
+    dom.js              referências aos elementos da página
+    spells.js           baixa o spells.json e consulta o motor
+    search/             motor de busca, independente da interface  (sem DOM)
+      text.js indexer.js ranking.js filters.js facets.js ordering.js engine.js
+    ui/                 desenho da tela
+      controls.js cards.js results.js footer.js header.js rows.js infopop.js tooltip.js
+```
+
+Regras que os testes (`tests/modules.test.mjs`) garantem: nenhum ciclo de importação, `search/` não importa nada
+da interface, os módulos marcados "sem DOM" não usam `document`/`window`, e todo CSS de `css/` está linkado no HTML.
+
+Para acrescentar algo: **uma escola/classe nova** vai em `config.js`; **um texto de ajuda** em `info-texts.js`;
+**um filtro novo** passa por `state.js` (estado), `search/filters.js` (regra), `ui/controls.js` (desenho) e `events.js`;
+**um critério de relevância** fica em `search/ranking.js`; **uma ordenação nova** em `search/ordering.js`
+(mais a opção no `<select id="sort">`).
 
 ## Como a busca funciona
+
+> Esta seção descreve a versão com servidor (Elasticsearch). No site estático o mesmo papel é feito por
+> `static/js/search/`; as regras de relevância estão documentadas no topo de `static/js/search/engine.js`.
 
 **Índice.** O nome da magia é indexado de três formas: texto em inglês (com *stemming*), prefixos
 (`edge_ngram`, para "fire" achar "Fireball") e palavra-chave exata para ordenar. A descrição usa o analisador

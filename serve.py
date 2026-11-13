@@ -16,6 +16,13 @@ STATIC = Path(__file__).parent / "static"
 
 
 class SemCache(http.server.SimpleHTTPRequestHandler):
+    # Módulos ES (<script type="module">) só funcionam se o servidor responder .js como JavaScript.
+    # No Windows o Python lê o registro do sistema e às vezes devolve "text/plain", então fixamos os tipos.
+    extensions_map = {
+        **http.server.SimpleHTTPRequestHandler.extensions_map,
+        ".js": "text/javascript", ".mjs": "text/javascript", ".css": "text/css", ".json": "application/json",
+    }
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store, max-age=0")
         super().end_headers()

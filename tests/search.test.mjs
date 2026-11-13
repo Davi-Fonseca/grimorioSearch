@@ -1,11 +1,8 @@
-// Testes da busca no navegador. Rode com:  node --test tests/
+// Testes do motor de busca (static/js/search). Rode com:  node --test
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createRequire } from "node:module";
 import { readFileSync } from "node:fs";
-
-const require = createRequire(import.meta.url);
-const { createIndex, search } = require("../static/search.js");
+import { createIndex, search } from "../static/js/search/engine.js";
 const docs = JSON.parse(readFileSync(new URL("../static/spells.json", import.meta.url), "utf-8"));
 const index = createIndex(docs);
 const names = (r) => r.hits.map((h) => h.name);

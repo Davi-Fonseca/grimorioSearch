@@ -1,0 +1,88 @@
+/* Componentes pontudos reutilizáveis: formas (hexágono/octógono), filtros ativos (chips) e botões. */
+
+.link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* filtros selecionados ficam visíveis logo abaixo da barra de busca ao rolar */
+.chips {
+  position: sticky;
+  top: var(--bar-h);
+  z-index: 4;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 10px 0 12px;
+  background: var(--bg);
+}
+
+.chips:empty { display: none; }
+
+.chip {
+  --pt: 11px;
+  --line: var(--gold);
+  --fill: var(--bg);
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 calc(var(--pt) + 3px) 0 calc(var(--pt) + 5px);
+  border: 0;
+  background: var(--line);
+  clip-path: var(--hex);
+  font-size: 13px;
+}
+
+.chip::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
+
+.chip span[aria-hidden] { color: var(--line); font-size: 16px; line-height: 1; }
+
+.chip:hover { --fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+
+.chip.neg { --line: var(--red); }
+
+.chip.neg:hover { --fill: color-mix(in srgb, var(--red) 16%, var(--bg)); }
+
+.chip:focus-visible { outline: none; --line: var(--ink); }
+
+.chip:focus-visible::before { inset: 2px; }
+
+/* Formas pontudas: hexágono alongado (no lugar das pílulas) e octógono (no lugar dos círculos).
+   A "borda" é o fundo do elemento; o ::before, com o mesmo formato, cobre o miolo. */
+:root {
+  --oct: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%);
+}
+
+.chip, .cls, .more-btn {   /* --pt (a ponta) é definido em cada um, por isso --hex fica aqui */
+  --hex: polygon(var(--pt) 0, calc(100% - var(--pt)) 0, 100% 50%, calc(100% - var(--pt)) 100%, var(--pt) 100%, 0 50%);
+}
+
+.more-btn {
+  --pt: 16px;
+  --line: var(--gold);
+  --fill: var(--bg);
+  position: relative;
+  isolation: isolate;
+  height: 40px;
+  padding: 0 calc(var(--pt) + 14px);
+  border: 0;
+  background: var(--line);
+  clip-path: var(--hex);
+  color: var(--gold);
+}
+
+.more-btn::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
+
+.more-btn:hover { --fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+
+.more-btn:focus-visible { outline: none; --line: var(--ink); }
+
+.more-btn:focus-visible::before { inset: 2px; }
