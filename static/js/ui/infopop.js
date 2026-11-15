@@ -7,13 +7,24 @@ let popBtn = null, popPinned = false, popTimer = null;
 
 function placePop() {
   if (!popBtn) return;
-  const r = popBtn.getBoundingClientRect(), m = 8;
+  const r = popBtn.getBoundingClientRect(), m = 8, g = 6;
+  pop.style.maxHeight = "";                              // mede o tamanho natural
   const w = pop.offsetWidth, h = pop.offsetHeight;
-  let left = r.left;                                   // alinha à esquerda do ícone…
-  if (left + w > innerWidth - m) left = r.right - w;   // …ou à direita, se não couber
-  left = Math.max(m, Math.min(left, innerWidth - w - m));
-  let top = r.bottom + 6;
-  if (top + h > innerHeight - m) top = Math.max(m, r.top - h - 6);
+  const clampX = (x) => Math.max(m, Math.min(x, innerWidth - w - m));
+  const clampY = (y) => Math.max(m, Math.min(y, innerHeight - h - m));
+  const alignX = clampX(r.left + w > innerWidth - m ? r.right - w : r.left);   // alinha à esquerda do ícone ou, se não couber, à direita
+  const below = innerHeight - m - (r.bottom + g), above = r.top - g - m;
+
+  let left, top;
+  if (h <= below) { left = alignX; top = r.bottom + g; }
+  else if (h <= above) { left = alignX; top = r.top - g - h; }
+  else if (r.left - g - w >= m) { left = r.left - g - w; top = clampY(r.top + r.height / 2 - h / 2); }                 // ao lado esquerdo
+  else if (r.right + g + w <= innerWidth - m) { left = r.right + g; top = clampY(r.top + r.height / 2 - h / 2); }     // ao lado direito
+  else {                                                 // sem espaço: usa o lado maior e deixa o balão rolável
+    left = alignX;
+    if (below >= above) { top = r.bottom + g; pop.style.maxHeight = `${below}px`; }
+    else { pop.style.maxHeight = `${above}px`; top = r.top - g - Math.min(h, above); }
+  }
   pop.style.left = `${left}px`; pop.style.top = `${top}px`;
 }
 

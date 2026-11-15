@@ -24,5 +24,10 @@ export const INFO = {
     html: `<p>Mostra só as magias que exigem todos os componentes marcados.</p>
       <p><strong>V</strong> = verbal, <strong>S</strong> = somático, <strong>M</strong> = material.</p>
       <p><strong>Filtragem reversa:</strong> esconde as magias que exigem qualquer um dos componentes marcados.</p>`
+  },
+  conditions: {
+    title: "Condições",
+    html: `<p>Mostra as magias que citam qualquer uma das condições marcadas, seja para causá-la ou para removê-la.</p>
+      <p><strong>Filtragem reversa:</strong> esconde as magias que citam qualquer uma das condições marcadas.</p>`
   }
 };

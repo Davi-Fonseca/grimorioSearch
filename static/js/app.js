@@ -6,7 +6,7 @@ import { querySpells } from "./spells.js";
 import { renderControls } from "./ui/controls.js";
 import { renderResults } from "./ui/results.js";
 
-let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {}, components: {} } };
+let data = { hits: [], total: 0, totalAll: 0, facets: { levels: {}, schools: {}, classes: {}, components: {}, conditions: {} } };
 let status = "loading";
 let timer = null;
 

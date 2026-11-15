@@ -41,9 +41,9 @@
 
 .tab-icon { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-.tab:hover { --line: var(--gold); color: var(--ink); }
+.tab:hover { --line: var(--teal); color: var(--ink); }
 
-.tab.on { --line: var(--gold); --fill: var(--gold); color: var(--accent-ink); font-weight: 700;
+.tab.on { --line: var(--teal); --fill: var(--teal); color: var(--accent-ink); font-weight: 700;
           --cut: 12px; height: 42px; font-size: 15px; }
 
 .tab.on .tab-icon { width: 20px; height: 20px; }

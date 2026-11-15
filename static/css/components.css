@@ -4,7 +4,7 @@
   background: none;
   border: 0;
   padding: 0;
-  color: var(--gold);
+  color: var(--teal);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -26,7 +26,7 @@
 
 .chip {
   --pt: 11px;
-  --line: var(--gold);
+  --line: var(--teal);
   --fill: var(--bg);
   position: relative;
   isolation: isolate;
@@ -45,7 +45,7 @@
 
 .chip span[aria-hidden] { color: var(--line); font-size: 16px; line-height: 1; }
 
-.chip:hover { --fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+.chip:hover { --fill: color-mix(in srgb, var(--teal) 14%, var(--bg)); }
 
 .chip.neg { --line: var(--red); }
 
@@ -67,7 +67,7 @@
 
 .more-btn {
   --pt: 16px;
-  --line: var(--gold);
+  --line: var(--teal);
   --fill: var(--bg);
   position: relative;
   isolation: isolate;
@@ -76,12 +76,12 @@
   border: 0;
   background: var(--line);
   clip-path: var(--hex);
-  color: var(--gold);
+  color: var(--teal);
 }
 
 .more-btn::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
 
-.more-btn:hover { --fill: color-mix(in srgb, var(--gold) 14%, var(--bg)); }
+.more-btn:hover { --fill: color-mix(in srgb, var(--teal) 14%, var(--bg)); }
 
 .more-btn:focus-visible { outline: none; --line: var(--ink); }
 

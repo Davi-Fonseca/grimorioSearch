@@ -10,7 +10,7 @@
  *   nome igual ao digitado > nome começando com ele > todas as palavras no nome > cada palavra no nome
  *   > rótulos > descrição. Empates seguem círculo e nome.
  *
- * Filtros: círculo/escola/classe (qualquer um dos marcados), componentes (todos os marcados), concentração
+ * Filtros: círculo/escola/classe/condição (qualquer um dos marcados), componentes (todos os marcados), concentração
  * e ritual; cada filtro pode virar "reverso" (p.exclude): o que está marcado some.
  *
  * Arquivos: text.js (palavras) · indexer.js (índice) · ranking.js (relevância) · filters.js (filtros)
@@ -26,7 +26,7 @@ export { createIndex };
 export { fold, stem } from "./text.js";
 
 const DEFAULTS = {
-  q: "", levels: [], schools: [], classes: [], components: [], concentration: false,
+  q: "", levels: [], schools: [], classes: [], components: [], conditions: [], concentration: false,
   ritual: false, exclude: [], sort: "level", limit: 48, offset: 0,
 };
 

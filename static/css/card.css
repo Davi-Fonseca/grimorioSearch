@@ -2,11 +2,11 @@
 
 .card {
   --school: var(--muted);
-  --paper: #ece3cc;
-  --p-ink: #2b1d10;
-  --p-muted: #6a5339;
-  --p-line: rgba(70, 45, 15, .3);
-  --p-red: #9c1d1d;
+  --paper: var(--surface);                 /* fundo do card */
+  --p-ink: var(--ink);                     /* texto */
+  --p-muted: var(--muted);
+  --p-line: rgba(241, 235, 220, .2);       /* linhas e bordas finas */
+  --p-accent: #e9d28f;                     /* nível, "Descrição completa", hover das etiquetas (areia) */
 
   position: relative;
   min-height: 300px;
@@ -36,9 +36,14 @@
   inset: 4px;
   z-index: -1;
   background: var(--paper);
+  transition: background-color .15s;
   clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
                      calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
 }
+
+.card { cursor: pointer; }   /* clicar no fundo abre/fecha a descrição (ver events.js) */
+
+.card .full { cursor: text; }
 
 .card :focus-visible { outline: 2px solid var(--p-ink); outline-offset: 2px; }
 
@@ -50,7 +55,7 @@
   font-size: 13px;
 }
 
-.card-top .lvl { font-family: var(--display); color: var(--p-red); font-size: 14px; }
+.card-top .lvl { font-family: var(--display); color: var(--p-accent); font-size: 14px; }
 
 .tags { display: flex; align-items: center; gap: 6px; }
 
@@ -71,6 +76,12 @@
   font-size: 20px;
   line-height: 1.2;
   color: var(--p-ink);
+  transition: color .15s;
+}
+
+.card:is(:hover, :focus-within) {
+  --paper: color-mix(in srgb, var(--school) 4%, var(--surface));
+  & h2 { color: var(--teal); }
 }
 
 .school-row {
@@ -102,11 +113,11 @@
 
 .cls::before { content: ""; position: absolute; inset: 1px; z-index: -1; background: var(--fill); clip-path: var(--hex); }
 
-.cls:hover { --line: var(--p-red); }
+.cls:hover { --line: var(--p-accent); }
 
-.cls.on { --line: #3a2812; --fill: #3a2812; color: #f3e7c8; font-weight: 500; }
+.cls.on { --line: var(--teal); --fill: var(--teal); color: var(--accent-ink); font-weight: 500; }
 
-.card .cls:focus-visible { outline: none; --line: var(--p-red); }
+.card .cls:focus-visible { outline: none; --line: var(--p-accent); }
 
 .card .cls:focus-visible::before { inset: 2px; }
 
@@ -138,6 +149,6 @@
 
 details.more { margin-top: auto; padding-top: 4px; font-size: 13px; }
 
-details.more summary { cursor: pointer; color: var(--p-red); width: fit-content; text-decoration: underline; text-underline-offset: 3px; }
+details.more summary { cursor: pointer; color: var(--p-accent); width: fit-content; text-decoration: underline; text-underline-offset: 3px; }
 
 details.more .full { white-space: pre-line; margin: 8px 0 0; color: var(--p-ink); }

@@ -52,8 +52,6 @@
   background: none;
   width: 22px;
   height: 22px;
-  margin-left: 4px;
-  vertical-align: 1px;
   color: var(--muted);
   transition: color .12s, filter .12s;
 }
@@ -62,7 +60,7 @@
 
 .filters .info svg { width: 18px; height: 18px; }
 
-.filters .info:hover, .filters .info[aria-expanded="true"] { color: var(--gold); filter: drop-shadow(0 0 5px rgba(232, 188, 57, .6)); }
+.filters .info:hover, .filters .info[aria-expanded="true"] { color: var(--teal); }
 
 .filters .info:focus-visible { outline: 2px solid var(--ink); outline-offset: 1px; }
 

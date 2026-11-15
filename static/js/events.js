@@ -18,6 +18,7 @@ export function bindEvents() {
   el.schools.addEventListener("change", (e) => { toggle(state.schools, e.target.value); changed(); });
   el.classes.addEventListener("change", (e) => { toggle(state.classes, e.target.value); changed(); });
   el.components.addEventListener("change", (e) => { toggle(state.components, e.target.value); changed(); });
+  el.conditions.addEventListener("change", (e) => { toggle(state.conditions, e.target.value); changed(); });
   el.conc.addEventListener("change", () => { state.concentration = el.conc.checked; changed(); });
   el.ritual.addEventListener("change", () => { state.ritual = el.ritual.checked; changed(); });
   el.clearSide.addEventListener("click", () => { clearFilters(); changed(); });
@@ -42,6 +43,11 @@ export function bindEvents() {
   el.results.addEventListener("click", (e) => {
     if (e.target.closest("#clear-empty")) return resetAll();
     if (e.target.closest("#retry")) return changed();
+    // clique no fundo do card (fora de botões, links e do texto da descrição) abre/fecha a descrição completa
+    const card = e.target.closest(".card");
+    if (card && !e.target.closest("button, a, summary, input, label, .full") && !getSelection().toString()) {
+      const d = card.querySelector("details.more"); d.open = !d.open; return;
+    }
     const b = e.target.closest(".cls"); if (!b) return;
     toggle(state.classes, b.dataset.class); changed();
   });

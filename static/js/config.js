@@ -11,7 +11,7 @@ export const SCHOOLS = {
   Evocation:     { pt: "Evocação",     color: "#ff5a3c" },
   Illusion:      { pt: "Ilusão",       color: "#7b4fff" },
   Necromancy:    { pt: "Necromancia",  color: "#70ce47" },
-  Transmutation: { pt: "Transmutação", color: "#c99a6b" }
+  Transmutation: { pt: "Transmutação", color: "#ffe057" }
 };
 export const CLASSES = {
   Bard: "Bardo", Cleric: "Clérigo", Druid: "Druida", Paladin: "Paladino",

@@ -16,5 +16,6 @@ export function facetCounts(base, params) {
     schools: count("schools", (d) => [d.school]),
     classes: count("classes", (d) => d.classes),
     components: count("components", (d) => d.components || []),
+    conditions: count("conditions", (d) => d.conditions || []),
   };
 }

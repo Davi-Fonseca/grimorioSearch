@@ -3,6 +3,7 @@
 // Filtragem reversa (p.exclude): no filtro marcado como reverso, o que foi selecionado NÃO aparece.
 // Círculo, escola e classe: some quem tiver qualquer um dos marcados.
 // Componentes: some quem exigir qualquer um dos marcados.
+// Condições: some quem citar qualquer uma das marcadas.
 // Características: some quem tiver concentração/ritual (conforme o que estiver marcado).
 export const passes = (d, p, skip) => {
   const neg = (k) => p.exclude.includes(k);
@@ -13,6 +14,8 @@ export const passes = (d, p, skip) => {
     (skip === "classes" || !p.classes.length || d.classes.some((c) => p.classes.includes(c)) !== neg("classes")) &&
     (skip === "components" || !p.components.length ||
       (neg("components") ? !p.components.some((c) => comps.includes(c)) : p.components.every((c) => comps.includes(c)))) &&
+    (skip === "conditions" || !p.conditions.length ||
+      (d.conditions || []).some((c) => p.conditions.includes(c)) !== neg("conditions")) &&
     (!p.concentration || Boolean(d.concentration) !== neg("features")) &&
     (!p.ritual || Boolean(d.ritual) !== neg("features"))
   );

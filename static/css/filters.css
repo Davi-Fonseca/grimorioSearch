@@ -16,7 +16,7 @@
   .filters::-webkit-scrollbar { width: 8px; }
   .filters::-webkit-scrollbar-track { background: var(--surface); }
   .filters::-webkit-scrollbar-thumb { background: #5b6a66; }
-  .filters::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+  .filters::-webkit-scrollbar-thumb:hover { background: var(--teal); }
   .filters::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
 }
 
@@ -24,7 +24,7 @@
 
 .fs-head { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; min-height: 28px; }
 
-.fs-title { margin: 0; padding: 0; font-family: var(--display); font-size: 17px; font-weight: 400; }
+.fs-title { margin: 0; padding: 0; display: flex; align-items: center; gap: 6px; font-family: var(--display); font-size: 17px; font-weight: 400; line-height: 1.2; }
 
 .fs-tools { margin-left: auto; display: flex; gap: 6px; }
 
@@ -59,7 +59,7 @@
                      calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
 }
 
-.tool:hover { --edge: var(--gold); color: var(--gold); }
+.tool:hover { --edge: var(--teal); color: var(--teal); }
 
 .tool:focus-visible { outline: none; --edge: var(--ink); }
 
@@ -96,15 +96,15 @@
   transition: background-color .12s;
 }
 
-.circ:hover { background: var(--gold); }
+.circ:hover { background: var(--teal); }
 
 .circ[aria-pressed="true"] {
-  background: var(--gold);
+  background: var(--teal);
   color: var(--accent-ink);
   font-weight: 600;
 }
 
-.circ[aria-pressed="true"]::before { background: var(--gold); }
+.circ[aria-pressed="true"]::before { background: var(--teal); }
 
 .circ:focus-visible { outline: none; background: var(--ink); }
 
@@ -153,7 +153,7 @@
 .sr { position: absolute; opacity: 0; width: 1px; height: 1px; margin: 0; pointer-events: none; }
 
 .opt .losango.box {
-  --c: var(--gold);  /* escolas sobrescrevem com a própria cor */
+  --c: var(--teal);  /* escolas sobrescrevem com a própria cor */
   --box: 15px;
   margin: 0 2px 0 3px;
   position: relative;

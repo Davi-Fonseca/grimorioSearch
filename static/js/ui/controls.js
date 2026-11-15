@@ -1,5 +1,6 @@
 /* Controles dos filtros: monta as opções, reflete o estado marcado, os chips de filtros ativos e as contagens. */
 import { SCHOOLS, CLASSES, COMPONENTS } from "../config.js";
+import { CONDITIONS, FILTER_CONDITIONS } from "../conditions.js";
 import { esc, byPt, levelLabel } from "../format.js";
 import { state, activeCount } from "../state.js";
 import { el, $ } from "../dom.js";
@@ -21,6 +22,10 @@ export function buildComponents() {
   el.components.innerHTML = Object.keys(COMPONENTS).map((k) => option("component", k, COMPONENTS[k])).join("");
 }
 
+export function buildConditionsFilter() {
+  el.conditions.innerHTML = FILTER_CONDITIONS.map((c) => option("condition", c.id, c.name)).join("");
+}
+
 function chipHtml(kind, value, label, neg = false) {
   const text = neg ? `Sem ${label}` : label;
   return `<button type="button" class="chip${neg ? " neg" : ""}" data-kind="${kind}" data-value="${esc(value)}" aria-label="Remover filtro: ${esc(text)}">${esc(text)} <span aria-hidden="true">×</span></button>`;
@@ -40,13 +45,14 @@ export function renderControls() {
   syncOptions(el.schools, "school", state.schools);
   syncOptions(el.classes, "class", state.classes);
   syncOptions(el.components, "component", state.components);
+  syncOptions(el.conditions, "condition", state.conditions);
   el.conc.checked = state.concentration;
   el.ritual.checked = state.ritual;
   el.optConc.classList.toggle("on", state.concentration);
   el.optRitual.classList.toggle("on", state.ritual);
 
   const has = { levels: state.levels.size, schools: state.schools.size, classes: state.classes.size,
-    components: state.components.size, features: (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0) };
+    components: state.components.size, conditions: state.conditions.size, features: (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0) };
   document.querySelectorAll(".fs[data-filter]").forEach((fs) => {
     const k = fs.dataset.filter;
     fs.classList.toggle("neg", state.neg[k]);
@@ -59,6 +65,7 @@ export function renderControls() {
   [...state.schools].forEach((k) => chips.push(chipHtml("schools", k, SCHOOLS[k].pt, state.neg.schools)));
   [...state.classes].forEach((k) => chips.push(chipHtml("classes", k, CLASSES[k], state.neg.classes)));
   [...state.components].forEach((k) => chips.push(chipHtml("components", k, COMPONENTS[k], state.neg.components)));
+  [...state.conditions].forEach((id) => chips.push(chipHtml("conditions", id, CONDITIONS.find((x) => x.id === id).name, state.neg.conditions)));
   if (state.concentration) chips.push(chipHtml("concentration", "", "Concentração", state.neg.features));
   if (state.ritual) chips.push(chipHtml("ritual", "", "Ritual", state.neg.features));
   el.chips.innerHTML = chips.join("");
@@ -85,4 +92,5 @@ export function renderFacetCounts(f) {
   syncCounts(el.schools, "school", f.schools);
   syncCounts(el.classes, "class", f.classes);
   syncCounts(el.components, "component", f.components || {});
+  syncCounts(el.conditions, "condition", f.conditions || {});
 }

@@ -1,18 +1,18 @@
 /* Estado da interface: o que está marcado, a busca e a ordenação (puro, sem DOM). */
 
 export const state = {
-  q: "", levels: new Set(), schools: new Set(), classes: new Set(), components: new Set(),
+  q: "", levels: new Set(), schools: new Set(), classes: new Set(), components: new Set(), conditions: new Set(),
   concentration: false, ritual: false, sort: "level",
-  neg: { levels: false, schools: false, classes: false, components: false, features: false } // filtragem reversa por filtro
+  neg: { levels: false, schools: false, classes: false, components: false, conditions: false, features: false } // filtragem reversa por filtro
 };
 
 export const activeCount = () =>
-  state.levels.size + state.schools.size + state.classes.size + state.components.size + (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0);
+  state.levels.size + state.schools.size + state.classes.size + state.components.size + state.conditions.size + (state.concentration ? 1 : 0) + (state.ritual ? 1 : 0);
 
 export const toggle = (set, v) => (set.has(v) ? set.delete(v) : set.add(v));
 
 export const clearFilters = () => {
-  state.levels.clear(); state.schools.clear(); state.classes.clear(); state.components.clear();
+  state.levels.clear(); state.schools.clear(); state.classes.clear(); state.components.clear(); state.conditions.clear();
   state.concentration = false; state.ritual = false;
   Object.keys(state.neg).forEach((k) => { state.neg[k] = false; });
 };
@@ -30,6 +30,7 @@ export function removeFilter(kind, value) {
   else if (kind === "schools") state.schools.delete(value);
   else if (kind === "classes") state.classes.delete(value);
   else if (kind === "components") state.components.delete(value);
+  else if (kind === "conditions") state.conditions.delete(value);
   else if (kind === "concentration") state.concentration = false;
   else if (kind === "ritual") state.ritual = false;
 }
@@ -54,6 +55,7 @@ export const searchParams = ({ limit, offset }) => ({
   schools: [...state.schools],
   classes: [...state.classes],
   components: [...state.components],
+  conditions: [...state.conditions],
   concentration: state.concentration,
   ritual: state.ritual,
   exclude: negatedSections(),

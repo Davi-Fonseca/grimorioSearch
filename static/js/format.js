@@ -42,3 +42,10 @@ export const inlineText = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<strong>$1</s
 // cada linha vira um parágrafo
 export const richText = (text) =>
   text.split("\n").filter(Boolean).map((p) => `<p>${inlineText(p)}</p>`).join("");
+
+/* Ids das condições citadas num texto (texto puro), pela mesma regra dos links; usado pelo filtro de condições. */
+export const conditionsIn = (text) => {
+  const ids = new Set();
+  for (const m of text.matchAll(COND_RE)) for (const n of m[2].matchAll(NAME_RE)) ids.add(COND_ID[n[0]]);
+  return [...ids];
+};
