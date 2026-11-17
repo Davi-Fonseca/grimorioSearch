@@ -1,0 +1,49 @@
+/* Botão de voltar ao topo (octógono, como as abas e os cards). */
+.to-top {
+  --cut: 10px;
+  --ci: calc(var(--cut) - 1.172px);   /* corte do miolo (inset de 2px) */
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 6;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: var(--teal);   /* contorno */
+  color: var(--teal);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
+                     calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  opacity: 0;
+  visibility: hidden;                /* escondido: não ocupa o Tab nem recebe clique */
+  transform: translateY(8px);
+  transition: opacity .2s, transform .2s, visibility .2s, color .15s;
+}
+
+.to-top::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  background: var(--surface);
+  transition: background-color .15s;
+  clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
+                     calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
+}
+
+.to-top.show { opacity: 1; visibility: visible; transform: none; }
+
+.to-top svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+.to-top:hover { color: var(--accent-ink); }
+
+.to-top:hover::before { background: var(--teal); }
+
+.to-top:focus-visible { outline: none; }
+
+.to-top:focus-visible::before { background: color-mix(in srgb, var(--teal) 28%, var(--surface)); }
+
+@media (max-width: 899px) { .to-top { right: 16px; bottom: 16px; } }

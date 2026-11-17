@@ -17,7 +17,13 @@
   justify-content: flex-end;       /* a barra de busca fica sempre na base do cabeçalho */
   background: var(--bg);
   border-bottom: 1px solid var(--line);
+  transition: top .2s ease;
 }
+
+/* ao rolar um pouco para cima, o cabeçalho completo (logo, abas e busca) volta; a classe "peek" vem de header.js */
+html.peek .top { top: 0; }
+
+html.peek { --sticky-top: var(--head-h); }
 
 .top.stuck .brand { display: none; }  /* com o logo fora da tela, a busca ocupa a largura toda */
 
@@ -38,7 +44,17 @@
   --shine: var(--teal);
 }
 
-.logo img { display: block; height: 92px; width: auto; max-width: 100%; }
+/* O PNG da logo tem margem transparente (esquerda 12px, topo 11px e base 23px num arquivo de 280×130). Os margins negativos
+   (proporcionais à altura) a compensam: a logo alinha com o texto de baixo e não fica colada no topo nem longe do tagline. */
+.logo { --logo-h: 92px; }
+
+.logo img {
+  display: block;
+  height: var(--logo-h);
+  width: auto;
+  max-width: 100%;
+  margin: calc(var(--logo-h) * -0.0846) 0 calc(var(--logo-h) * -0.1769) calc(var(--logo-h) * -0.0923);
+}
 
 .brand .tagline { font-size: 13px; color: var(--muted); }
 

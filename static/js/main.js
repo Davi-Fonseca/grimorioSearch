@@ -12,6 +12,8 @@ import { initRows } from "./ui/rows.js";
 import { initTabs } from "./ui/tabs.js";
 import { initConditions } from "./ui/condpanel.js"; 
 import { initCondLinks } from "./ui/condlinks.js";
+import { initToTop } from "./ui/totop.js";
+import { initFoldTab } from "./ui/foldtab.js";
 
 loadIndex();   // começa a baixar as magias já, enquanto a página é montada
 
@@ -25,6 +27,8 @@ initHeader();
 initTabs();
 initConditions(); 
 initCondLinks();
+initToTop();
+initFoldTab();
 initTooltips();
 initInfoPopover();
 initRows();

@@ -23,7 +23,7 @@
   }
   .filters.open { display: block; }
   .circles { grid-template-columns: repeat(5, 48px); }
-  .logo img { height: 81px; }
+  .logo { --logo-h: 81px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

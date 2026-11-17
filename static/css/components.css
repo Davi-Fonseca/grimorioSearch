@@ -12,7 +12,8 @@
 /* filtros selecionados ficam visíveis logo abaixo da barra de busca ao rolar */
 .chips {
   position: sticky;
-  top: var(--bar-h);
+  top: var(--sticky-top);
+  transition: top .2s ease;
   z-index: 4;
   display: flex;
   flex-wrap: wrap;

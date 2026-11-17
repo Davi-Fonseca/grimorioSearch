@@ -1,0 +1,38 @@
+/* Marcador de página (língua de livro) na horizontal, que recolhe e mostra a barra de filtros. Só no desktop. */
+
+/* fica na calha entre os filtros e os cards, preso no topo ao rolar (mesma altura dos filtros); altura 0 para não empurrar nada */
+.fold-wrap {
+  position: sticky;
+  top: calc(var(--sticky-top) + 22px);
+  height: 0;
+  z-index: 3;
+  transition: top .2s ease;
+}
+
+.fold-tab {
+  --fold: var(--muted);          /* cor da fita */
+  --fold-hover: #4c67c3;       /* cor ao passar o mouse */
+  position: absolute;
+  left: -32px;
+  top: 4px;
+  width: 29px;
+  height: 26px;
+  padding: 0;
+  border: 0;
+  cursor: pointer;
+  background-color: var(--fold);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 50%, 100% 100%, 0 100%);   /* ponta em V da fita, na direita */
+  transition: background-color .08s ease-out;   /* ao tirar o mouse: apaga devagar */
+}
+
+/* ao passar o mouse (ou focar pelo teclado): muda na hora, sem transição */
+.fold-tab:hover, .fold-tab:focus-visible { background-color: var(--fold-hover); transition: none; }
+
+.fold-tab:focus-visible { outline: none; }
+
+@media (min-width: 900px) {
+  .layout.filters-off { grid-template-columns: minmax(0, 1fr); }
+  .layout.filters-off .filters { display: none; }
+}
+
+@media (max-width: 899px) { .fold-wrap { display: none; } }   /* no celular os filtros já abrem e fecham pelo botão "Filtros" */

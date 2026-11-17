@@ -3,8 +3,9 @@
 .filters {
   --panel: var(--bg);
   position: sticky;
-  top: calc(var(--bar-h) + 22px);
-  max-height: calc(100vh - var(--bar-h) - 44px);
+  top: calc(var(--sticky-top) + 22px);
+  transition: top .2s ease;
+  max-height: calc(100vh - var(--sticky-top) - 44px);
   overflow-y: auto;
   padding-right: 8px;
   scrollbar-width: thin;

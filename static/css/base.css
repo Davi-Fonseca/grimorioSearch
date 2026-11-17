@@ -2,8 +2,9 @@
 
 :root {
   --bg: #0f1515;
-  --teal: #60f8b3;
+  --teal: #5cee94;
   --red: #ff2222;
+  --blue: #4C67C3;
   --surface: #151d1c;
   --ink: #f1ebdc;
   --muted: #9aa59f;
@@ -12,6 +13,7 @@
   --accent-ink: #0f1515;
   --head-h: 132px; /* altura do cabeçalho completo (logo + busca) */
   --bar-h: 72px;   /* altura que sobra fixa no topo ao rolar (só a busca) */
+  --sticky-top: var(--bar-h);   /* onde os itens fixos abaixo do cabeçalho (filtros, chips) ficam; vira --head-h quando o cabeçalho completo reaparece */
   --display: "Libre Caslon Text", "Baskerville", Georgia, "Times New Roman", serif;
   --serif: "Minion Pro", "Libre Caslon Text", "Georgia", "Times New Roman", serif;
   --sans: var(--serif);

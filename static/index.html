@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Grimório – busca de magias de D&amp;D 5e</title>
+<link rel="icon" type="image/x-icon" href="img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -15,6 +16,8 @@
 <link rel="stylesheet" href="css/popovers.css">
 <link rel="stylesheet" href="css/tabs.css">
 <link rel="stylesheet" href="css/conditions.css">
+<link rel="stylesheet" href="css/totop.css">
+<link rel="stylesheet" href="css/foldtab.css">
 <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
@@ -123,6 +126,9 @@
   </aside>
 
   <section aria-label="Resultados">
+    <div class="fold-wrap">
+      <button type="button" class="fold-tab" id="fold-tab" aria-controls="filters" aria-expanded="true" aria-label="Recolher filtros" data-tip="Recolher filtros"></button>
+    </div>
     <div class="toolbar">
       <div class="total" id="total" aria-live="polite"></div>
       <label class="sort">Ordenar por
@@ -165,6 +171,10 @@
   <p>This work includes material from the System Reference Document 5.2 (“SRD 5.2”) by Wizards of the Coast LLC, available at https://www.dndbeyond.com/srd, translated and adapted into Portuguese. The SRD 5.2 is licensed under the Creative Commons Attribution 4.0 International License, available at https://creativecommons.org/licenses/by/4.0/legalcode.</p>
 </footer>
 </div>
+
+<button type="button" class="to-top" id="to-top" aria-label="Voltar ao topo">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>
+</button>
 
 <script type="module" src="js/main.js"></script>
 </body>

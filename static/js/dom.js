@@ -12,5 +12,5 @@ export const el = {
   viewSpells: $("#view-spells"), viewConditions: $("#view-conditions"),
   condGrid: $("#cond-grid"), condTotal: $("#cond-total"), condDialog: $("#cond-dialog"),
   condTitle: $("#cond-title"), condBody: $("#cond-body"), condClose: $("#cond-close"), condPop: $("#cond-pop"),
-  header: $(".top"), footer: $("#footer"), tip: $("#tip"), infoPop: $("#info-pop")
+  header: $(".top"), toTop: $("#to-top"), foldTab: $("#fold-tab"), footer: $("#footer"), tip: $("#tip"), infoPop: $("#info-pop")
 };
