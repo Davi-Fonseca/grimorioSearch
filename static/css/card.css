@@ -9,7 +9,6 @@
   --p-accent: #e9d28f;                     /* nível, "Descrição completa", hover das etiquetas (areia) */
 
   position: relative;
-  min-height: 300px;
   padding: 24px 22px 24px 24px;
   display: flex;
   flex-direction: column;
@@ -136,16 +135,6 @@
 .meta dd { margin: 0; }
 
 .meta .sep { color: var(--p-muted); margin: 0 1px; }
-
-.summary {
-  margin: 2px 0 0;
-  font-size: 13px;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
 
 details.more { margin-top: auto; padding-top: 4px; font-size: 13px; }
 
