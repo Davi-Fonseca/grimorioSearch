@@ -3,7 +3,7 @@
 [hidden] { display: none !important; }
 
 /* a busca (e as abas acima dela) ocupa o espaço ao lado do logo */
-.top-main { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.top-main { flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
 .top-row { display: flex; align-items: flex-end; gap: 28px; }
 .top.stuck .tabs { display: none; }   /* com o logo fora da tela, sobra só a busca */
 
@@ -14,6 +14,9 @@
   --ci: calc(var(--cut) - 0.586px);             
   --line: #2b3836;
   --fill: var(--bg);
+  --off: 5px;                                   
+  --off-color: var(--d-blue);                     /* a sombra que fica para trás, embaixo à esquerda */
+  --hi: #6db5fa;                                  /* azul claro do realce (arestas de cima e da direita da aba selecionada) */
   position: relative;
   isolation: isolate;
   display: inline-flex;
@@ -22,11 +25,20 @@
   height: 36px;
   padding: 0 calc(var(--cut) + 10px);
   border: 0;
-  background: var(--line);
-  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
-                     calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  background: none;
   color: var(--muted);
   font-size: 14px;
+}
+
+/* borda (contorno externo): fica num pseudo-elemento porque o filter do hover seria cortado por um clip-path no próprio .tab */
+.tab::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--blue);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
+                     calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
 }
 
 .tab::before {
@@ -41,10 +53,41 @@
 
 .tab-icon { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
-.tab:hover { --line: var(--teal); color: var(--ink); }
+.tab:hover,
+.tab.on {
+  --line: var(--hi);
+  color: var(--ink);
+  filter: drop-shadow(calc(var(--off) * -1) var(--off) 0 var(--off-color));
+}
 
-.tab.on { --line: var(--teal); --fill: var(--teal); color: var(--accent-ink); font-weight: 700;
-          --cut: 12px; height: 42px; font-size: 15px; }
+.tab:hover::before,
+.tab:hover::after,
+.tab:hover > *,
+.tab.on::before,
+.tab.on::after,
+.tab.on > * { transform: translate(var(--off), calc(var(--off) * -1)); }
+
+/* aba selecionada: maior que as outras */
+.tab.on {
+  --fill: var(--blue);
+  --cut: 14px;          /* era 12px */
+  height: 48px;         /* era 42px */
+  font-size: 17px;      /* era 15px */
+  font-weight: 700;
+}
+
+.tab.on .tab-icon { width: 24px; height: 24px; }   /* era 20px */
+
+/* realce: o contorno da aba selecionada é o azul claro e só aparece nas arestas de cima, do chanfro superior direito e da direita */
+.tab.on::after { background: var(--hi); }
+
+/* miolo encosta embaixo/esquerda e recua 2px em cima/direita (o tom claro sobra só nessas arestas) */
+.tab.on::before {
+  inset: 2px 2px 0 0;
+  clip-path: polygon(calc(var(--cut) - 2px) 0, calc(100% - var(--cut) + 1.172px) 0, 100% calc(var(--cut) - 1.172px),
+                     100% calc(100% - var(--cut) + 2px), calc(100% - var(--cut) + 2px) 100%, var(--cut) 100%,
+                     0 calc(100% - var(--cut)), 0 calc(var(--cut) - 2px));
+}
 
 .tab.on .tab-icon { width: 20px; height: 20px; }
 

@@ -1,0 +1,178 @@
+/* ---- aba Invocações e blocos de estatísticas ---- */
+.sb-view { padding: 24px 32px; }
+
+.sb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 18px; align-items: start; }
+
+/* card da aba: usa o octógono e a pilha de páginas do .card das magias (card.css); aqui só o que é diferente */
+.card.sb-full { min-height: 0; }
+
+.sb-full h2 { font-size: 22px; }
+
+.sb-kind { margin: 0; font-style: italic; font-size: 13.5px; color: var(--p-muted, var(--muted)); }
+
+.sb-scores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 8px;
+  margin: 6px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--p-line);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.sb-scores b { font-weight: 400; color: var(--p-muted); }
+
+.sb-scores i { font-style: normal; color: var(--p-muted); }
+
+.sb-open {
+  width: fit-content;
+  margin-top: 8px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--p-accent);
+  font-size: 13px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* card compacto dentro da descrição de uma magia (botão com cantos cortados, como as etiquetas e abas) */
+.sb-card {
+  --cut: 10px;
+  --ci: calc(var(--cut) - 0.586px);     /* corte do miolo: mantém a diagonal com a mesma espessura */
+  --ol: var(--p-line);
+  --sb-paper: color-mix(in srgb, var(--p-accent) 7%, var(--surface));
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px 14px 10px 16px;
+  border: 0;
+  background: var(--ol);
+  clip-path: polygon(var(--cut) 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% calc(100% - var(--cut)),
+                     calc(100% - var(--cut)) 100%, var(--cut) 100%, 0 calc(100% - var(--cut)), 0 var(--cut));
+  color: var(--p-ink);
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+}
+
+.sb-card::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  background: var(--sb-paper);
+  clip-path: polygon(var(--ci) 0, calc(100% - var(--ci)) 0, 100% var(--ci), 100% calc(100% - var(--ci)),
+                     calc(100% - var(--ci)) 100%, var(--ci) 100%, 0 calc(100% - var(--ci)), 0 var(--ci));
+}
+
+.sb-card:hover,
+.sb-card:focus-visible { --ol: var(--teal); --sb-paper: color-mix(in srgb, var(--teal) 12%, var(--bg)); }
+
+.card .sb-card:focus-visible { outline: none; --ol: var(--ink); }
+
+.sb-card-name {
+  font-family: var(--display);
+  font-size: 16px;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 4px;
+}
+
+.sb-card-kind { font-style: italic; font-size: 12.5px; color: var(--p-muted); }
+
+.sb-card-glance { display: grid; gap: 1px; margin-top: 4px; font-size: 12.5px; }
+
+.sb-card-glance b { display: inline-block; min-width: 42px; font-weight: 400; color: var(--p-muted); }
+
+.sb-card-hint { margin-top: 4px; font-size: 12.5px; color: var(--p-accent); }
+
+/* janela: o bloco de estatísticas, no mesmo pergaminho da janela das condições */
+.sb-dialog { width: min(660px, calc(100vw - 24px)); }
+
+.sb { font-size: 15px; line-height: 1.45; }
+
+.sb .sb-name { margin: 0 40px 2px 0; font-size: 28px; line-height: 1.15; text-decoration: none; }
+
+.sb .sb-kind { color: #2b1d10; }
+
+.sb-spell { margin: 4px 0 0; font-size: 13.5px; color: #6a5339; }
+
+.sb-goto {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #9c1d1d;
+  font: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.sb-goto:hover { text-decoration-style: solid; }
+
+.sb-goto:focus-visible { outline: 2px solid #2b1d10; outline-offset: 2px; }
+
+/* botões de forma/tipo: mostram só o que vale para a escolha feita na conjuração */
+.sb-forms { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 10px; }
+
+.sb-forms-label { margin-right: 2px; font-size: 13.5px; color: #6a5339; }
+
+.sb-form {
+  height: 28px;
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid #b89d68;
+  border-radius: 2px;
+  color: #2b1d10;
+  font-size: 13.5px;
+}
+
+.sb-form:hover { border-color: #9c1d1d; }
+
+.sb-form[aria-pressed="true"] { background: #9c1d1d; border-color: #9c1d1d; color: #f4ecd6; }
+
+.sb-form:focus-visible { outline: 2px solid #2b1d10; outline-offset: 2px; }
+
+/* divisor afinando para a direita, como nos blocos impressos */
+.sb-rule { height: 5px; margin: 10px 0; border: 0; background: #9c1d1d; clip-path: polygon(0 0, 100% 50%, 0 100%); }
+
+.sb-prop { margin: 2px 0; }
+
+.sb-prop strong { color: #7a1717; }
+
+.sb .sep { margin: 0 1px; color: #6a5339; }
+
+.sb-sp:not(.is-last)::after { content: ", "; }
+
+.sb-abil { width: 100%; border-collapse: collapse; text-align: center; font-variant-numeric: tabular-nums; }
+
+.sb-abil th, .sb-abil td { padding: 2px 6px; }
+
+.sb-abil thead th { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: #7a1717; }
+
+.sb-abil tbody th { text-align: left; font-weight: 700; color: #7a1717; }
+
+.sb-abil tbody tr:nth-child(odd) { background: rgba(156, 29, 29, .08); }
+
+.sb-abil tr > :nth-child(5) { padding-left: 20px; }   /* respiro entre as duas colunas de atributos */
+
+.sb-sec { margin-top: 12px; }
+
+.sb-sec h3 {
+  margin: 0 0 4px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #9c1d1d;
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 400;
+  color: #9c1d1d;
+}
+
+.sb-feat { margin: 6px 0; }
+
+.sb-note { margin: 12px 0 0; padding-top: 8px; border-top: 1px dashed #b89d68; font-size: 14px; }

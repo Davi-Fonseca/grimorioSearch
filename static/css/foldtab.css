@@ -33,6 +33,7 @@
 @media (min-width: 900px) {
   .layout.filters-off { grid-template-columns: minmax(0, 1fr); }
   .layout.filters-off .filters { display: none; }
+  .layout.filters-off { padding-left: 32px; }   /* sem os filtros, a fita (32px à esquerda dos cards) precisa da calha inteira; senão sai da tela */
 }
 
 @media (max-width: 899px) { .fold-wrap { display: none; } }   /* no celular os filtros já abrem e fecham pelo botão "Filtros" */

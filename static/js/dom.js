@@ -9,8 +9,9 @@ export const el = {
   chips: $("#chips"), results: $("#results"), more: $("#more"),
   filters: $("#filters"), toggle: $("#toggle-filters"), clearSide: $("#clear-side"),
   tabList: $(".tabs"), tabs: [...document.querySelectorAll(".tab")],
-  viewSpells: $("#view-spells"), viewConditions: $("#view-conditions"),
+  viewSpells: $("#view-spells"), viewConditions: $("#view-conditions"), viewSummons: $("#view-summons"),
   condGrid: $("#cond-grid"), condTotal: $("#cond-total"), condDialog: $("#cond-dialog"),
   condTitle: $("#cond-title"), condBody: $("#cond-body"), condClose: $("#cond-close"), condPop: $("#cond-pop"),
+  sbGrid: $("#sb-grid"), sbTotal: $("#sb-total"), sbDialog: $("#sb-dialog"), sbBody: $("#sb-body"), sbClose: $("#sb-close"),
   header: $(".top"), toTop: $("#to-top"), foldTab: $("#fold-tab"), footer: $("#footer"), tip: $("#tip"), infoPop: $("#info-pop")
 };

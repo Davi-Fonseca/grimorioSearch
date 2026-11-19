@@ -44,7 +44,7 @@ test("não há ciclos de importação", () => {
 });
 
 test("módulos puros não usam DOM nem navegador", () => {
-  const pure = jsFiles.filter((f) => /^(config|format|state|info-texts)\.js$|^search\//.test(rel(f)) || rel(f) === "ui/cards.js");
+  const pure = jsFiles.filter((f) => /^(config|format|state|info-texts|summons)\.js$|^search\//.test(rel(f)) || rel(f) === "ui/cards.js" || rel(f) === "ui/sbhtml.js");
   assert.ok(pure.length >= 10);
   for (const f of pure) {
     const src = read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");

@@ -2,7 +2,7 @@
 import { state, toggle, clearFilters, clearSection, removeFilter } from "./state.js";
 import { el } from "./dom.js";
 import { changed, runSearch, applyQuery, resetAll } from "./app.js";
-import { isSpellsTab } from "./ui/tabs.js";
+import { isSpellsTab, setTab } from "./ui/tabs.js";
 
 export function bindEvents() {
   // busca e ordenação
@@ -58,6 +58,17 @@ export function bindEvents() {
   el.toggle.addEventListener("click", () => {
     const open = el.filters.classList.toggle("open");
     el.toggle.setAttribute("aria-expanded", open);
+  });
+
+  // "Magia: Invocar Dragão" no bloco de estatísticas: fecha a janela, volta às magias e busca pelo nome
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-goto-spell]"); if (!b) return;
+    el.sbDialog.close();
+    setTab("spells");
+    el.q.value = b.dataset.gotoSpell;
+    applyQuery(el.q.value);
+    changed();
+    scrollTo({ top: 0 });
   });
 
   // "/" foca a busca

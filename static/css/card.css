@@ -29,11 +29,11 @@
   transition: filter .04s ease-out;
   --stack:
     drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 var(--stack-gap))
-    drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 color-mix(in srgb, var(--school) 85%, var(--bg)))
+    drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 color-mix(in srgb, var(--blue) 85%, var(--d-blue)))
     drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 var(--stack-gap))
-    drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 color-mix(in srgb, var(--school) 55%, var(--bg)))
+    drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 color-mix(in srgb, var(--blue) 55%, var(--d-blue)))
     drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 var(--stack-gap))
-    drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 color-mix(in srgb, var(--school) 30%, var(--bg)));
+    drop-shadow(calc(var(--stack-step) * -1) var(--stack-step) 0 color-mix(in srgb, var(--blue) 25%, var(--d-blue)));
 }
 
 .card::after {   /* a outline: octógono inteiro na cor da escola, visível ao redor do ::before */
@@ -102,7 +102,7 @@
   filter: var(--stack);   /* a pilha de páginas aparece */
 }
 
-.card:is(:hover, :focus-within)::after { background: var(--school); }
+.card:is(:hover, :focus-within)::after { background: var(--blue); }
 
 .school-row {
   display: flex;

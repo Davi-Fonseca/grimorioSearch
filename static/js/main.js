@@ -12,6 +12,7 @@ import { initRows } from "./ui/rows.js";
 import { initTabs } from "./ui/tabs.js";
 import { initConditions } from "./ui/condpanel.js"; 
 import { initCondLinks } from "./ui/condlinks.js";
+import { initSummons } from "./ui/summonpanel.js";
 import { initToTop } from "./ui/totop.js";
 import { initFoldTab } from "./ui/foldtab.js";
 
@@ -27,6 +28,7 @@ initHeader();
 initTabs();
 initConditions(); 
 initCondLinks();
+initSummons();
 initToTop();
 initFoldTab();
 initTooltips();

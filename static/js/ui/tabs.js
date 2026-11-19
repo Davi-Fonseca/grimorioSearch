@@ -1,39 +1,38 @@
-/* Abas do cabeçalho (Magias / Condições): troca de painel e de busca. */
+/* Abas do cabeçalho (Magias / Condições / Invocações): troca de painel e de busca. */
 import { el } from "../dom.js";
 import { renderConditions } from "./condpanel.js";
+import { renderSummons } from "./summonpanel.js";
 
-const PLACEHOLDERS = {
-  spells: { text: "Nome ou efeito (ex.: fogo, cura)", label: "Buscar magias" },
-  conditions: { text: "Nome da condição", label: "Buscar condições" }
+const TABS = {
+  spells:     { text: "Nome ou efeito (ex.: fogo, cura)",          label: "Buscar magias",     view: el.viewSpells },
+  conditions: { text: "Nome da condição",                          label: "Buscar condições",  view: el.viewConditions, render: renderConditions },
+  summons:    { text: "Nome da criatura ou da magia (ex.: dragão)", label: "Buscar invocações", view: el.viewSummons,   render: renderSummons }
 };
 
 let tab = "spells";
-let spellQuery = "";   // o texto da busca de cada aba é guardado ao trocar
-let condQuery = "";
+const queries = { spells: "", conditions: "", summons: "" };   // o texto da busca de cada aba é guardado ao trocar
 
 export const isSpellsTab = () => tab === "spells";
 
 export function setTab(next) {
-  if (next === tab) return;
-  if (tab === "spells") spellQuery = el.q.value; else condQuery = el.q.value;
+  if (next === tab || !TABS[next]) return;
+  queries[tab] = el.q.value;
   tab = next;
 
-  const spells = tab === "spells";
   el.tabs.forEach((b) => {
     const on = b.dataset.tab === tab;
     b.classList.toggle("on", on);
     b.setAttribute("aria-selected", on);
     b.tabIndex = on ? 0 : -1;
   });
-  el.viewSpells.hidden = !spells;
-  el.viewConditions.hidden = spells;
-  el.toggle.hidden = !spells;   // o botão "Filtros" só existe nas magias
+  Object.entries(TABS).forEach(([ name, t ]) => { t.view.hidden = name !== tab; });
+  el.toggle.hidden = !isSpellsTab();   // o botão "Filtros" só existe nas magias
 
-  const ph = PLACEHOLDERS[tab];
-  el.q.placeholder = ph.text;
-  el.q.setAttribute("aria-label", ph.label);
-  el.q.value = spells ? spellQuery : condQuery;
-  if (!spells) renderConditions(condQuery);
+  const t = TABS[tab];
+  el.q.placeholder = t.text;
+  el.q.setAttribute("aria-label", t.label);
+  el.q.value = queries[tab];
+  t.render?.(queries[tab]);
 }
 
 export function initTabs() {
@@ -54,9 +53,9 @@ export function initTabs() {
     setTab(el.tabs[j].dataset.tab);
   });
 
-  // busca das condições (a das magias fica em events.js)
-  el.q.addEventListener("input", () => { if (!isSpellsTab()) { condQuery = el.q.value; renderConditions(condQuery); } });
+  // busca das condições e das invocações (a das magias fica em events.js)
+  el.q.addEventListener("input", () => { if (!isSpellsTab()) { queries[tab] = el.q.value; TABS[tab].render(el.q.value); } });
   el.q.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !isSpellsTab()) { el.q.value = condQuery = ""; renderConditions(""); }
+    if (e.key === "Escape" && !isSpellsTab()) { el.q.value = queries[tab] = ""; TABS[tab].render(""); }
   });
 }

@@ -193,3 +193,7 @@
 .opt.on .sr:focus-visible + .losango.box::before { background: var(--c); }
 
 .switch-row { display: flex; flex-direction: column; gap: 4px; }
+
+@media (min-width: 900px) {
+  .layout { padding-left: 12px; }
+}

@@ -6,7 +6,7 @@
   .brand { flex-basis: 100%; }
   .top-main { flex-basis: 100%; }
   .search { flex: 1 1 0; min-width: 0; }
-  .cond-view { padding: 16px; }
+  .cond-view, .sb-view { padding: 16px; }
   .layout { grid-template-columns: 1fr; gap: 14px; padding: 16px; }
   footer { padding: 8px 16px 44px; }
   .toggle-filters { display: inline-flex; align-items: center; }
@@ -24,6 +24,10 @@
   .filters.open { display: block; }
   .circles { grid-template-columns: repeat(5, 48px); }
   .logo { --logo-h: 81px; }
+  .top.stuck .top-inner { flex-wrap: nowrap; }
+  .top.stuck .brand { flex-basis: auto; flex: none; }
+  .top.stuck .top-main { flex: 1 1 0; }
+  .top.stuck .logo { --logo-h: 46px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

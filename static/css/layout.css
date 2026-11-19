@@ -25,7 +25,8 @@ html.peek .top { top: 0; }
 
 html.peek { --sticky-top: var(--head-h); }
 
-.top.stuck .brand { display: none; }  /* com o logo fora da tela, a busca ocupa a largura toda */
+.top.stuck .tagline { display: none; }          /* recolhido: o subtítulo some e a logo fica, menor, ao lado da busca */
+.top.stuck .logo { --logo-h: 58px; }
 
 .top-inner {
   padding: 22px 32px 14px;
@@ -35,7 +36,16 @@ html.peek { --sticky-top: var(--head-h); }
   flex-wrap: wrap;
 }
 
-.brand { display: flex; flex-direction: column; gap: 8px; }
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;               /* ocupa a mesma altura da coluna das abas + busca */
+  justify-content: space-between;    /* logo no topo, tagline embaixo (alinhado com a busca) */
+}
+
+/* a aba selecionada fica levantada 5px (--off), então o topo visual dela está 5px acima da caixa */
+.logo { margin-top: -5px; }
 
 .logo {
   margin: 0;

@@ -1,6 +1,8 @@
 /* Card de uma magia (devolve HTML; não toca no DOM). */
 import { SCHOOLS, CLASSES } from "../config.js";
 import { esc, levelLabel, rangeHtml, linkConditions, damageText, areaHtml } from "../format.js";
+import { SUMMON_BY_SPELL } from "../summons.js";
+import { summonCardHtml } from "./sbhtml.js";
 
 const EYE = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="2.6"/></svg>`;
 
@@ -13,6 +15,9 @@ export function cardHtml(s, selectedClasses = new Set()) {
   ).join("");
   const school = SCHOOLS[s.school] || { pt: s.school, color: "var(--muted)" };
   const comps = (s.components || []).join(", ") + (s.material ? ` (${s.material})` : "");
+  // magias que invocam uma criatura: o bloco de estatísticas (que vem colado em higher_level) dá lugar a um card clicável
+  const summon = SUMMON_BY_SPELL[s.id];
+  const higher = summon ? summon.higherLevel : s.higher_level;
   const info = s.concentration
     ? `<button type="button" class="info" data-info="conc" aria-label="O que é Concentração?" aria-expanded="false" aria-controls="info-pop">${EYE}</button>`
     : "";
@@ -34,7 +39,8 @@ export function cardHtml(s, selectedClasses = new Set()) {
     <details class="more">
       <summary>${s.lang === "pt" ? "Descrição completa" : "Descrição completa (em inglês)"}</summary>
       <p class="full">${linkConditions(esc(s.description))}</p>
-      ${s.higher_level ? `<p class="full"><strong>Em círculos superiores.</strong> ${linkConditions(esc(s.higher_level))}</p>` : ""}
+      ${higher ? `<p class="full"><strong>Em círculos superiores.</strong> ${linkConditions(esc(higher))}</p>` : ""}
+      ${summon ? summonCardHtml(summon) : ""}
     </details>
   </article>`;
 }
