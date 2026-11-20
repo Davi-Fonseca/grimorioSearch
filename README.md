@@ -72,13 +72,7 @@ node --test                              # opcional (precisa do Node.js 22 ou ma
 # 2. Teste localmente, sem cache do navegador (http://localhost:8080)
 python serve.py
 
-# 3. Publique (precisa de conta gratuita no Cloudflare)
-npx wrangler deploy                      # usa o wrangler.jsonc deste repositório
 ```
-
-Também dá para conectar o repositório do GitHub pelo painel do Cloudflare (Workers & Pages) e apontar o
-diretório de saída para `static`, sem comando de build, já que `static/spells.json` vai no repositório.
-Arquivos estáticos não contam no limite diário de requisições do plano gratuito.
 
 O `docker compose up -d` continua servindo a mesma pasta, mas o Elasticsearch e a API (`app.py`) só são
 necessários se você quiser a versão com servidor; a interface atual não usa `/api/search`.
